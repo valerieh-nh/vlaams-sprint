@@ -22,40 +22,36 @@
     --green: #2ecc71;
     --blue: #3a9bd5;
     --yellow: #f5a623;
+    --red: #e74c3c;
     --radius: 12px;
     --font: 'Barlow', sans-serif;
     --font-cond: 'Barlow Condensed', sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    min-height: 100vh;
-    overflow-x: hidden;
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+  /* VISITOR BANNER */
+  .visitor-banner {
+    background: linear-gradient(90deg, var(--orange), var(--orange-dark));
+    color: white; padding: 14px 20px; text-align: center;
+    font-family: var(--font-cond); font-weight: 700; font-size: 16px;
+    letter-spacing: 0.5px; position: sticky; top: 0; z-index: 200;
+  }
+  .visitor-banner small {
+    display: block; font-family: var(--font); font-weight: 500;
+    font-size: 12px; opacity: 0.9; margin-top: 2px; letter-spacing: 0;
   }
 
   /* TOP NAV */
   nav {
-    background: #111;
-    border-bottom: 1px solid var(--border);
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: #111; border-bottom: 1px solid var(--border);
+    padding: 0 20px; display: flex; align-items: center; gap: 16px;
+    height: 56px; position: sticky; top: 0; z-index: 100;
   }
+  body.visitor nav { top: 56px; }
   .logo {
-    font-family: var(--font-cond);
-    font-weight: 900;
-    font-size: 22px;
-    color: var(--orange);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    flex-shrink: 0;
+    font-family: var(--font-cond); font-weight: 900; font-size: 22px;
+    color: var(--orange); letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0;
   }
   .logo span { color: var(--text); }
   .nav-tabs { display: flex; gap: 4px; overflow-x: auto; flex: 1; }
@@ -81,35 +77,49 @@
   /* PAGES */
   .page { display: none; max-width: 820px; margin: 0 auto; padding: 24px 20px 60px; }
   .page.active { display: block; }
+  body.visitor .write-only { display: none !important; }
 
   /* SECTION HEADERS */
-  .section-header {
-    display: flex; align-items: baseline; gap: 12px;
-    margin-bottom: 16px; margin-top: 28px;
-  }
+  .section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; margin-top: 28px; }
   .section-header:first-child { margin-top: 0; }
   .section-title {
-    font-family: var(--font-cond); font-weight: 700;
-    font-size: 13px; text-transform: uppercase;
-    letter-spacing: 1.5px; color: var(--text-muted);
+    font-family: var(--font-cond); font-weight: 700; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted);
   }
   .section-line { flex: 1; height: 1px; background: var(--border); }
 
   /* HERO STATS */
-  .hero-stats {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 12px; margin-bottom: 24px;
-  }
-  .stat-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px;
-  }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
   .stat-card.accent { border-color: var(--orange); background: rgba(252,76,2,0.06); }
-  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase;
-    font-weight: 600; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px; margin-bottom: 6px; }
   .stat-value { font-family: var(--font-cond); font-weight: 900; font-size: 32px; line-height: 1; }
   .stat-value.orange { color: var(--orange); }
   .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  /* SHARE BUTTON */
+  .share-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--orange); color: white; border: none;
+    border-radius: 10px; padding: 10px 16px; font-family: var(--font);
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; cursor: pointer; transition: background 0.15s;
+  }
+  .share-btn:hover { background: var(--orange-dark); }
+  .share-toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--surface2); border: 1px solid var(--orange);
+    color: var(--text); padding: 12px 20px; border-radius: 10px;
+    font-size: 13px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s; z-index: 9999; max-width: 90vw;
+    word-break: break-all; text-align: center;
+  }
+  .share-toast.show { opacity: 1; }
+  .share-row { display: flex; gap: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  .share-link-input {
+    flex: 1; min-width: 200px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; color: var(--text); font-family: monospace; font-size: 12px;
+  }
 
   /* WEEK CARDS */
   .week-grid { display: flex; flex-direction: column; gap: 12px; }
@@ -120,23 +130,14 @@
   }
   .week-card:hover { border-color: rgba(252,76,2,0.4); }
   .week-card.current { border-color: var(--orange); }
-  .week-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px; border-bottom: 1px solid var(--border);
-  }
-  .week-num {
-    font-family: var(--font-cond); font-weight: 900; font-size: 28px;
-    color: var(--text-dim); min-width: 32px;
-  }
+  .week-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .week-num { font-family: var(--font-cond); font-weight: 900; font-size: 28px; color: var(--text-dim); min-width: 32px; }
   .week-card.current .week-num { color: var(--orange); }
   .week-card.done .week-num { color: var(--green); }
   .week-info { flex: 1; }
   .week-name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
   .week-goal { font-size: 12px; color: var(--text-muted); }
-  .week-badge {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.6px; padding: 4px 10px; border-radius: 20px;
-  }
+  .week-badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; padding: 4px 10px; border-radius: 20px; }
   .badge-current { background: var(--orange-glow); color: var(--orange); }
   .badge-done { background: rgba(46,204,113,0.12); color: var(--green); }
   .badge-locked { background: var(--surface2); color: var(--text-dim); }
@@ -148,12 +149,8 @@
     border: 1.5px solid var(--border); background: none;
     cursor: pointer; transition: all 0.15s; font-family: var(--font);
   }
-  .day-btn:hover:not(.done):not(.locked) {
-    border-color: var(--orange); background: var(--orange-glow);
-  }
-  .day-btn.done {
-    background: rgba(46,204,113,0.1); border-color: var(--green);
-  }
+  .day-btn:hover:not(.done):not(.locked) { border-color: var(--orange); background: var(--orange-glow); }
+  .day-btn.done { background: rgba(46,204,113,0.1); border-color: var(--green); }
   .day-btn.locked { opacity: 0.35; cursor: default; }
   .day-btn.review { border-style: dashed; }
   .day-num { font-family: var(--font-cond); font-weight: 700; font-size: 16px; line-height: 1; }
@@ -165,8 +162,7 @@
   .week-card.done .week-progress-fill { background: var(--green); }
 
   /* HEATMAP */
-  .heatmap-wrap { background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px; }
+  .heatmap-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
   .heatmap-months { display: flex; gap: 4px; margin-bottom: 6px; margin-left: 28px; }
   .heatmap-month-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
   .heatmap-grid { display: flex; gap: 3px; }
@@ -174,11 +170,7 @@
   .heatmap-day-label { font-size: 9px; color: var(--text-muted); height: 12px; display: flex; align-items: center; }
   .heatmap-weeks { display: flex; gap: 3px; flex: 1; overflow: hidden; }
   .heatmap-week-col { display: flex; flex-direction: column; gap: 3px; }
-  .heatmap-cell {
-    width: 12px; height: 12px; border-radius: 2px;
-    background: var(--surface3); cursor: pointer;
-    transition: transform 0.1s;
-  }
+  .heatmap-cell { width: 12px; height: 12px; border-radius: 2px; background: var(--surface3); cursor: pointer; transition: transform 0.1s; }
   .heatmap-cell:hover { transform: scale(1.3); }
   .heatmap-cell.l1 { background: rgba(252,76,2,0.25); }
   .heatmap-cell.l2 { background: rgba(252,76,2,0.5); }
@@ -187,13 +179,25 @@
   .heatmap-legend { display: flex; align-items: center; gap: 6px; margin-top: 12px; justify-content: flex-end; }
   .heatmap-legend span { font-size: 10px; color: var(--text-muted); }
   .legend-cell { width: 10px; height: 10px; border-radius: 2px; }
+  /* SRS BOX BAR */
+  .srs-boxes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+  .srs-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px; text-align: center; }
+  .srs-box-num { font-family: var(--font-cond); font-weight: 900; font-size: 22px; color: var(--text); }
+  .srs-box.box-1 .srs-box-num { color: var(--red); }
+  .srs-box.box-2 .srs-box-num { color: var(--yellow); }
+  .srs-box.box-3 .srs-box-num { color: var(--blue); }
+  .srs-box.box-4 .srs-box-num { color: var(--orange); }
+  .srs-box.box-5 .srs-box-num { color: var(--green); }
+  .srs-box-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-top: 2px; }
+  .srs-due-pill {
+    display: inline-block; background: var(--orange-glow); color: var(--orange);
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 12px; margin-left: 8px;
+  }
 
   /* QUIZ */
-  .quiz-wrap { background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 24px; }
-  .quiz-category {
-    display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
-  }
+  .quiz-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+  .quiz-category { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
   .cat-btn {
     background: var(--surface2); border: 1.5px solid var(--border);
     color: var(--text-muted); font-family: var(--font); font-size: 12px;
@@ -202,14 +206,14 @@
   }
   .cat-btn.active { background: var(--orange-glow); border-color: var(--orange); color: var(--orange); }
   .cat-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .quiz-question {
-    font-size: 13px; color: var(--text-muted); text-transform: uppercase;
-    font-weight: 600; letter-spacing: 0.8px; margin-bottom: 10px;
+  .quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .quiz-question { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px; }
+  .quiz-box-tag {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 3px 10px; font-size: 11px;
+    font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
   }
-  .quiz-prompt {
-    font-family: var(--font-cond); font-weight: 700; font-size: 26px;
-    line-height: 1.2; margin-bottom: 20px; color: var(--text);
-  }
+  .quiz-prompt { font-family: var(--font-cond); font-weight: 700; font-size: 26px; line-height: 1.2; margin-bottom: 20px; color: var(--text); }
   .quiz-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-style: italic; }
   .quiz-input-row { display: flex; gap: 10px; margin-bottom: 16px; }
   .quiz-input {
@@ -219,7 +223,7 @@
   }
   .quiz-input:focus { border-color: var(--orange); }
   .quiz-input.correct { border-color: var(--green); background: rgba(46,204,113,0.06); }
-  .quiz-input.wrong { border-color: #e74c3c; background: rgba(231,76,60,0.06); }
+  .quiz-input.wrong { border-color: var(--red); background: rgba(231,76,60,0.06); }
   .quiz-submit {
     background: var(--orange); border: none; border-radius: 10px;
     padding: 12px 22px; color: white; font-family: var(--font);
@@ -228,13 +232,11 @@
   }
   .quiz-submit:hover { background: var(--orange-dark); }
   .quiz-submit:disabled { opacity: 0.5; cursor: default; }
-  .quiz-feedback {
-    border-radius: 10px; padding: 14px 16px; font-size: 14px;
-    display: none; margin-bottom: 12px;
-  }
+  .quiz-feedback { border-radius: 10px; padding: 14px 16px; font-size: 14px; display: none; margin-bottom: 12px; }
   .quiz-feedback.correct { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: var(--green); display: block; }
-  .quiz-feedback.wrong { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); color: #e74c3c; display: block; }
+  .quiz-feedback.wrong { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); color: var(--red); display: block; }
   .quiz-feedback strong { font-weight: 700; }
+  .quiz-feedback .next-due { display: block; font-size: 12px; opacity: 0.85; margin-top: 4px; font-style: italic; }
   .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
   .quiz-score { font-family: var(--font-cond); font-weight: 700; font-size: 18px; }
   .quiz-score span { color: var(--orange); }
@@ -247,18 +249,30 @@
   .quiz-next:hover { border-color: var(--orange); color: var(--orange); }
   .quiz-progress { height: 3px; background: var(--surface3); border-radius: 2px; margin-bottom: 20px; }
   .quiz-progress-fill { height: 100%; background: var(--orange); border-radius: 2px; transition: width 0.3s; }
+  .quiz-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+  .quiz-empty .big { font-family: var(--font-cond); font-weight: 900; font-size: 28px; color: var(--green); margin-bottom: 8px; }
 
-  /* VOCAB */
-  .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  /* LEXICON */
+  .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
   .vocab-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px; cursor: pointer;
-    transition: border-color 0.15s; user-select: none;
+    border-radius: 10px; padding: 14px; transition: border-color 0.15s;
+    user-select: none; position: relative;
   }
   .vocab-card:hover { border-color: rgba(252,76,2,0.4); }
-  .vocab-flemish { font-family: var(--font-cond); font-weight: 700; font-size: 18px; margin-bottom: 4px; color: var(--orange); }
+  .vocab-flemish { font-family: var(--font-cond); font-weight: 700; font-size: 18px; margin-bottom: 4px; color: var(--orange); padding-right: 36px; }
   .vocab-english { font-size: 13px; color: var(--text-muted); }
   .vocab-note { font-size: 11px; color: var(--text-dim); margin-top: 6px; font-style: italic; }
+  .vocab-audio-btn {
+    position: absolute; top: 10px; right: 10px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--orange); font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .vocab-audio-btn:hover { background: var(--orange); color: white; border-color: var(--orange); }
+  .vocab-audio-btn.playing { background: var(--orange); color: white; animation: pulse 1s ease-in-out infinite; }
   .vocab-filter { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   .filter-btn {
     background: var(--surface); border: 1.5px solid var(--border);
@@ -266,25 +280,66 @@
     font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer;
   }
   .filter-btn.active { border-color: var(--orange); color: var(--orange); background: var(--orange-glow); }
+  .vocab-search {
+    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none; margin-bottom: 14px;
+  }
+  .vocab-search:focus { border-color: var(--orange); }
+  .voice-note {
+    font-size: 11px; color: var(--text-muted); margin-bottom: 14px;
+    padding: 8px 12px; background: var(--surface2);
+    border-left: 3px solid var(--orange); border-radius: 4px;
+  }
 
-  /* FIELD TEST */
-  .field-test-card {
+  /* WEEKLY TESTS */
+  .wt-card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 18px; margin-bottom: 12px;
-    display: flex; gap: 16px; align-items: flex-start;
   }
-  .ft-week { font-family: var(--font-cond); font-weight: 900; font-size: 36px; color: var(--text-dim); min-width: 40px; }
-  .ft-info { flex: 1; }
-  .ft-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  .ft-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-  .ft-done-btn {
-    background: none; border: 1.5px solid var(--border);
-    border-radius: 8px; padding: 8px 16px; color: var(--text-muted);
-    font-family: var(--font); font-size: 12px; font-weight: 700;
-    text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  .wt-card.locked { opacity: 0.5; }
+  .wt-head { display: flex; gap: 16px; align-items: center; margin-bottom: 4px; }
+  .wt-week { font-family: var(--font-cond); font-weight: 900; font-size: 36px; color: var(--text-dim); min-width: 40px; }
+  .wt-card.passed .wt-week { color: var(--green); }
+  .wt-card.attempted .wt-week { color: var(--orange); }
+  .wt-info { flex: 1; }
+  .wt-title { font-weight: 700; font-size: 15px; }
+  .wt-desc { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .wt-status {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; padding: 4px 10px; border-radius: 20px;
   }
-  .ft-done-btn.done { border-color: var(--green); color: var(--green); background: rgba(46,204,113,0.08); }
-  .ft-done-btn:hover:not(.done) { border-color: var(--orange); color: var(--orange); }
+  .wt-status.passed { background: rgba(46,204,113,0.12); color: var(--green); }
+  .wt-status.attempted { background: var(--orange-glow); color: var(--orange); }
+  .wt-status.locked { background: var(--surface2); color: var(--text-dim); }
+  .wt-status.ready { background: rgba(58,155,213,0.12); color: var(--blue); }
+  .wt-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .wt-btn {
+    background: var(--orange); border: none; border-radius: 8px;
+    padding: 8px 16px; color: white; font-family: var(--font);
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; cursor: pointer; transition: background 0.15s;
+  }
+  .wt-btn:hover { background: var(--orange-dark); }
+  .wt-btn.secondary { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text-muted); }
+  .wt-btn.secondary:hover { border-color: var(--orange); color: var(--orange); background: var(--surface2); }
+  .wt-btn:disabled { opacity: 0.4; cursor: default; }
+  .wt-best { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+  .wt-best strong { color: var(--text); font-family: var(--font-cond); font-weight: 700; }
+  /* WEEKLY TEST RUNNER */
+  .wt-runner { background: var(--surface); border: 1px solid var(--orange); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+  .wt-runner-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .wt-runner-title { font-family: var(--font-cond); font-weight: 900; font-size: 22px; color: var(--orange); }
+  .wt-runner-progress { font-family: var(--font-cond); font-weight: 700; font-size: 14px; color: var(--text-muted); }
+  .wt-result {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 20px;
+  }
+  .wt-result.passed { border-color: var(--green); }
+  .wt-result-score { font-family: var(--font-cond); font-weight: 900; font-size: 64px; line-height: 1; }
+  .wt-result.passed .wt-result-score { color: var(--green); }
+  .wt-result-score-sub { color: var(--text-muted); font-size: 14px; margin-bottom: 12px; }
+  .wt-result-msg { font-family: var(--font-cond); font-weight: 700; font-size: 18px; margin-bottom: 16px; }
 
   /* CONFETTI */
   @keyframes confetti-fall {
@@ -302,9 +357,12 @@
     .stat-card:last-child { grid-column: span 2; }
     .week-days { grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .day-num { font-size: 13px; }
+    .srs-boxes { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .srs-box-num { font-size: 18px; }
+    nav { padding: 0 12px; gap: 8px; }
+    .logo { font-size: 18px; }
   }
 
-  /* SCROLLBAR */
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
@@ -312,13 +370,15 @@
 </head>
 <body>
 
+<div id="visitor-banner-host"></div>
+
 <nav>
   <div class="logo">Vlaams<span>Sprint</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
-    <button class="nav-tab" onclick="showPage('quiz')">Quiz</button>
-    <button class="nav-tab" onclick="showPage('vocab')">Vocab</button>
-    <button class="nav-tab" onclick="showPage('challenges')">Challenges</button>
+    <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+    <button class="nav-tab" data-page="quiz">SRS Quiz</button>
+    <button class="nav-tab" data-page="weekly">Weekly Tests</button>
+    <button class="nav-tab" data-page="lexicon">Lexicon &amp; Audio</button>
   </div>
   <div class="streak-badge">
     <span class="streak-fire">🔥</span>
@@ -329,7 +389,6 @@
 
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
-
   <div class="hero-stats">
     <div class="stat-card accent">
       <div class="stat-label">🔥 Current streak</div>
@@ -346,6 +405,14 @@
       <div class="stat-value" id="stat-week">1</div>
       <div class="stat-sub" id="stat-week-name">Foundations</div>
     </div>
+  </div>
+
+  <div class="write-only" style="display:flex;justify-content:flex-end;margin-bottom:8px">
+    <button class="share-btn" id="share-btn">📤 Share progress</button>
+  </div>
+  <div class="share-row write-only" id="share-row" style="display:none">
+    <input type="text" class="share-link-input" id="share-link" readonly />
+    <button class="wt-btn secondary" id="copy-link">Copy</button>
   </div>
 
   <div class="section-header">
@@ -382,141 +449,304 @@
     <div class="section-line"></div>
   </div>
   <div class="week-grid" id="week-grid"></div>
-
 </div>
 
-<!-- QUIZ -->
+<!-- SRS QUIZ -->
 <div class="page" id="page-quiz">
-
   <div class="section-header">
-    <div class="section-title">Daily practice</div>
+    <div class="section-title">Spaced-repetition quiz <span class="srs-due-pill" id="srs-due-pill">0 due</span></div>
     <div class="section-line"></div>
   </div>
+
+  <div class="srs-boxes" id="srs-boxes"></div>
 
   <div class="quiz-wrap">
     <div class="quiz-category" id="quiz-cats"></div>
     <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-prog-fill" style="width:0%"></div></div>
-    <div class="quiz-question" id="quiz-q-label"></div>
-    <div class="quiz-prompt" id="quiz-prompt"></div>
-    <div class="quiz-hint" id="quiz-hint"></div>
-    <div class="quiz-input-row">
-      <input type="text" class="quiz-input" id="quiz-input" placeholder="Type your answer…" />
-      <button class="quiz-submit" id="quiz-submit" onclick="checkAnswer()">Check</button>
+    <div id="quiz-active">
+      <div class="quiz-meta">
+        <div class="quiz-question" id="quiz-q-label"></div>
+        <div class="quiz-box-tag" id="quiz-box-tag"></div>
+      </div>
+      <div class="quiz-prompt" id="quiz-prompt"></div>
+      <div class="quiz-hint" id="quiz-hint"></div>
+      <div class="quiz-input-row">
+        <input type="text" class="quiz-input" id="quiz-input" placeholder="Type your answer…" autocomplete="off" />
+        <button class="quiz-submit" id="quiz-submit">Check</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <div class="quiz-nav">
+        <div class="quiz-score">Session: <span id="quiz-score-val">0</span> / <span id="quiz-total-val">0</span></div>
+        <button class="quiz-next" id="quiz-next" style="display:none">Next →</button>
+      </div>
     </div>
-    <div class="quiz-feedback" id="quiz-feedback"></div>
-    <div class="quiz-nav">
-      <div class="quiz-score">Score: <span id="quiz-score-val">0</span> / <span id="quiz-total-val">0</span></div>
-      <button class="quiz-next" id="quiz-next" onclick="nextQuestion()" style="display:none">Next →</button>
+    <div id="quiz-empty" class="quiz-empty" style="display:none">
+      <div class="big">All caught up ✓</div>
+      <div>No items due right now. Come back tomorrow, or pick a category to drill.</div>
     </div>
   </div>
 </div>
 
-<!-- VOCAB -->
-<div class="page" id="page-vocab">
-  <div class="vocab-filter" id="vocab-filter"></div>
-  <div class="vocab-grid" id="vocab-grid"></div>
-</div>
-
-<!-- CHALLENGES -->
-<div class="page" id="page-challenges">
+<!-- WEEKLY TESTS -->
+<div class="page" id="page-weekly">
+  <div id="wt-runner-host"></div>
+  <div id="wt-result-host"></div>
   <div class="section-header">
-    <div class="section-title">Field tests</div>
+    <div class="section-title">Weekly graded tests</div>
+    <div class="section-line"></div>
+  </div>
+  <div id="wt-list"></div>
+
+  <div class="section-header">
+    <div class="section-title">Field tests (real-world)</div>
     <div class="section-line"></div>
   </div>
   <div id="field-tests-list"></div>
 </div>
 
+<!-- LEXICON -->
+<div class="page" id="page-lexicon">
+  <div class="voice-note" id="voice-note">Loading voices…</div>
+  <input type="text" class="vocab-search" id="vocab-search" placeholder="Search Flemish or English…" />
+  <div class="vocab-filter" id="vocab-filter"></div>
+  <div class="vocab-grid" id="vocab-grid"></div>
+</div>
+
+<div class="share-toast" id="share-toast"></div>
+
 <script>
-// ========== DATA ==========
+// ============================================================
+// STATIC DATA
+// ============================================================
 const WEEKS = [
-  {
-    num:1, name:"Foundations", theme:"Greetings & present tense",
-    grammar:"Present tense, V2 word order",
+  { num:1, name:"Foundations", grammar:"Present tense, V2 word order",
     goal:"Open and hold a 1-minute introduction",
-    days:["Hallo & dag","Numbers, days, time","Ik ben / ik heb","Plural present tense","V2 word order trick","Putting it all together","Review + wild challenge"]
-  },
-  {
-    num:2, name:"Café & bar life", theme:"Modal verbs & ordering",
-    grammar:"Willen, kunnen, mogen, moeten",
+    days:["Hallo & dag","Numbers, days, time","Ik ben / ik heb","Plural present tense","V2 word order trick","Putting it all together","Review + wild challenge"] },
+  { num:2, name:"Café & bar life", grammar:"Willen, kunnen, mogen, moeten",
     goal:"Order drinks and small-talk on a terrace",
-    days:["Modals 101","Ordering drinks","Paying & small talk","Café vocabulary","Trappist culture","Full café conversation","Review + wild challenge"]
-  },
-  {
-    num:3, name:"Food & frituur", theme:"De/het & diminutives",
-    grammar:"Articles, diminutives (-je, -ke)",
+    days:["Modals 101","Ordering drinks","Paying & small talk","Café vocabulary","Trappist culture","Full café conversation","Review + wild challenge"] },
+  { num:3, name:"Food & frituur", grammar:"Articles, diminutives (-je, -ke)",
     goal:"Order a meal, navigate a frituur",
-    days:["Restaurant arrival","Ordering a meal","The frituur ritual","De or het?","Diminutives in practice","Food vocabulary","Review + wild challenge"]
-  },
-  {
-    num:4, name:"Past tense & storytelling", theme:"Perfect tense",
-    grammar:"Hebben / zijn + past participle",
+    days:["Restaurant arrival","Ordering a meal","The frituur ritual","De or het?","Diminutives in practice","Food vocabulary","Review + wild challenge"] },
+  { num:4, name:"Past tense & storytelling", grammar:"Hebben / zijn + past participle",
     goal:"Talk about your weekend in past tense",
-    days:["Hebben + regular","Zijn + movement","Irregular participles","'t Kofschip rule","Storytelling phrases","Full past tense","Review + wild challenge"]
-  },
-  {
-    num:5, name:"People in your life", theme:"Pronouns & possessives",
-    grammar:"Pronouns, possessives, adjectives",
+    days:["Hebben + regular","Zijn + movement","Irregular participles","'t Kofschip rule","Storytelling phrases","Full past tense","Review + wild challenge"] },
+  { num:5, name:"People in your life", grammar:"Pronouns, possessives, adjectives",
     goal:"Describe friends and family",
-    days:["Subject pronouns","Object pronouns","Possessives","Adjective agreement","Family vocabulary","Describing people","Review + wild challenge"]
-  },
-  {
-    num:6, name:"Getting around", theme:"Prepositions & future",
-    grammar:"Prepositions, simple future",
+    days:["Subject pronouns","Object pronouns","Possessives","Adjective agreement","Family vocabulary","Describing people","Review + wild challenge"] },
+  { num:6, name:"Getting around", grammar:"Prepositions, simple future",
     goal:"Take a tram, ask directions, plan a trip",
-    days:["Prepositions of place","Movement prepositions","Simple future (gaan)","Zullen + infinitive","Transport vocabulary","Asking directions","Review + wild challenge"]
-  },
-  {
-    num:7, name:"Slang & consolidation", theme:"Sound like a local",
-    grammar:"Conditional, ge/gij, filler words",
+    days:["Prepositions of place","Movement prepositions","Simple future (gaan)","Zullen + infinitive","Transport vocabulary","Asking directions","Review + wild challenge"] },
+  { num:7, name:"Slang & consolidation", grammar:"Conditional, ge/gij, filler words",
     goal:"Pull it all together, sound less textbooky",
-    days:["Filler words & glue","Antwerp expressions","Zou + infinitive","Ge/gij recognition","Slang deep dive","Full consolidation","Capstone: in de wild!"]
-  }
+    days:["Filler words & glue","Antwerp expressions","Zou + infinitive","Ge/gij recognition","Slang deep dive","Full consolidation","Capstone: in de wild!"] }
 ];
 
 const FIELD_TESTS = [
-  { week:1, title:"Greet someone in Flemish", desc:"Say hallo to a colleague or neighbour in Flemish. Dag, salut, goeiemorgen — whatever fits. Just do it out loud." },
-  { week:2, title:"Order at a café in Flemish", desc:"Walk into a bar and order your drink using Flemish phrases. 'Mag ik een pintje, alstublieft?' Nailed it." },
-  { week:3, title:"Navigate a frituur", desc:"Order at a frituur using Flemish. Ask for a frietje and sauce. If they reply in Dutch, you're winning." },
-  { week:4, title:"Talk about your weekend", desc:"Tell a friend or colleague what you did last weekend — in Flemish. At least 3 past-tense sentences." },
-  { week:5, title:"Describe someone you know", desc:"Describe a friend or family member in Flemish to someone. Use possessives and adjectives naturally." },
-  { week:6, title:"Ask for directions", desc:"Stop someone and ask how to get somewhere in Flemish. Bonus: understand the answer." },
-  { week:7, title:"Hold a full 5-minute conversation", desc:"Find a Belgian and have a real social conversation — greet, order, chat, wrap up. All in Flemish. Stumble proudly." }
+  { week:1, title:"Greet someone in Flemish", desc:"Say hallo to a colleague or neighbour. Dag, salut, goeiemorgen — whatever fits. Out loud." },
+  { week:2, title:"Order at a café", desc:"Order a drink in Flemish. 'Mag ik een pintje, alstublieft?' Nailed it." },
+  { week:3, title:"Navigate a frituur", desc:"Order a frietje and a sauce. If they reply in Dutch, you're winning." },
+  { week:4, title:"Talk about your weekend", desc:"Three past-tense sentences to a friend or colleague." },
+  { week:5, title:"Describe someone you know", desc:"Use possessives and adjectives in a quick description." },
+  { week:6, title:"Ask for directions", desc:"Stop someone and ask the way. Bonus: understand the answer." },
+  { week:7, title:"Hold a 5-minute conversation", desc:"Greet, order, chat, wrap up. All Flemish. Stumble proudly." }
 ];
 
-const QUIZ_QUESTIONS = {
-  "V2 Order": [
-    { q:"Rearrange: [Morgen] [ik] [ga] [naar de markt]", hint:"Time word first → verb stays in position 2", answer:"Morgen ga ik naar de markt", type:"inversion" },
-    { q:"Rearrange: [Gisteren] [ik] [heb] [hard gewerkt]", hint:"Auxiliary in slot 2, participle at the end", answer:"Gisteren heb ik hard gewerkt", type:"inversion" },
-    { q:"Rearrange: [Vanavond] [wij] [gaan] [naar het café]", hint:"V2 rule: verb in second position always", answer:"Vanavond gaan wij naar het café", type:"inversion" },
-    { q:"Rearrange: [Seffens] [ik] [vertrek]", hint:"Seffens = 'in a moment' — typical Antwerp time word", answer:"Seffens vertrek ik", type:"inversion" },
-    { q:"Rearrange: [Volgende week] [wij] [gaan] [naar Gent]", hint:"Multi-word time expressions still count as position 1", answer:"Volgende week gaan wij naar Gent", type:"inversion" }
-  ],
-  "Translate": [
-    { q:"Translate: 'I'd like a beer, please.'", hint:"Use 'graag' for polite want", answer:"Ik wil graag een pintje, alstublieft", type:"translate" },
-    { q:"Translate: 'May I have the menu?'", hint:"Mag ik + noun", answer:"Mag ik de kaart", type:"translate" },
-    { q:"Translate: 'Yesterday I ate at a good restaurant.'", hint:"Perfect tense: heb + gegeten", answer:"Gisteren heb ik in een goed restaurant gegeten", type:"translate" },
-    { q:"Translate: 'I have a brother and two sisters.'", hint:"Direct from the placement test!", answer:"Ik heb een broer en twee zussen", type:"translate" },
-    { q:"Translate: 'Could you repeat that more slowly?'", hint:"Kun je + infinitive", answer:"Kun je dat trager herhalen", type:"translate" },
-    { q:"Translate: 'We're going to Bruges next weekend.'", hint:"Use the future with 'gaan'", answer:"We gaan volgend weekend naar Brugge", type:"translate" }
-  ],
-  "Past tense": [
-    { q:"Form the past participle of: WERKEN", hint:"'t Kofschip: stem 'werk' ends in K → add -t", answer:"gewerkt", type:"participle" },
-    { q:"Form the past participle of: WONEN", hint:"Stem 'woon' ends in N → add -d", answer:"gewoond", type:"participle" },
-    { q:"Which auxiliary? 'I went to Antwerp.' [ik ___ naar Antwerpen gegaan]", hint:"Movement with destination → zijn", answer:"ben", type:"auxiliary" },
-    { q:"Which auxiliary? 'She ate a croissant.' [zij ___ een croissant gegeten]", hint:"Eating = no movement → hebben", answer:"heeft", type:"auxiliary" },
-    { q:"Form the past participle of: KOPEN", hint:"Irregular! Think: koop → kocht", answer:"gekocht", type:"participle" },
-    { q:"Form the past participle of: GAAN", hint:"Very common movement verb", answer:"gegaan", type:"participle" }
-  ],
-  "Vocab": [
-    { q:"What does 'amai' mean?", hint:"An Antwerp exclamation of surprise", answer:"wow", type:"vocab" },
-    { q:"What does 'seffens' mean?", hint:"Antwerp time word — very common!", answer:"in a moment", type:"vocab" },
-    { q:"What does 'plezant' mean?", hint:"Antwerp word where standard Dutch says 'leuk'", answer:"fun", type:"vocab" },
-    { q:"What does 'een goesting hebben' mean?", hint:"You knew this in the placement test!", answer:"to crave something", type:"vocab" },
-    { q:"What does 'allez' mean?", hint:"Swiss army knife Belgian filler word", answer:"come on", type:"vocab" },
-    { q:"What does ''t Gaat' mean?", hint:"Perfectly Belgian reply to 'Hoe gaat het?'", answer:"it goes", type:"vocab" }
-  ]
+// ============================================================
+// SRS ITEM BANK — each item has a stable id
+// Categories: "V2 Order" | "Translate" | "Past tense" | "Vocab"
+// ============================================================
+const SRS_BANK = [
+  // ---- V2 Order: classic inversions (time-fronted) ----
+  { id:"v2-01", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Morgen] [ik] [ga] [naar de markt]",
+    hint:"Time word first → verb stays in position 2",
+    answer:"Morgen ga ik naar de markt" },
+  { id:"v2-02", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Gisteren] [ik] [heb] [hard gewerkt]",
+    hint:"Auxiliary in slot 2, participle at the end",
+    answer:"Gisteren heb ik hard gewerkt" },
+  { id:"v2-03", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Vanavond] [wij] [gaan] [naar het café]",
+    hint:"Verb in second position always",
+    answer:"Vanavond gaan wij naar het café" },
+  { id:"v2-04", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Seffens] [ik] [vertrek]",
+    hint:"Seffens = 'in a moment' (Antwerp time word)",
+    answer:"Seffens vertrek ik" },
+  { id:"v2-05", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Volgende week] [wij] [gaan] [naar Gent]",
+    hint:"Multi-word time expression still counts as position 1",
+    answer:"Volgende week gaan wij naar Gent" },
+  { id:"v2-06", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Op zondag] [ik] [fiets] [graag in het bos]",
+    hint:"Front the prepositional time phrase, then verb",
+    answer:"Op zondag fiets ik graag in het bos" },
+  { id:"v2-07", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [In de winter] [wij] [drinken] [veel glühwein]",
+    hint:"Seasonal phrase first, verb second",
+    answer:"In de winter drinken wij veel glühwein" },
+  { id:"v2-08", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Na het werk] [ik] [drink] [een pintje]",
+    hint:"Time clause first, then verb",
+    answer:"Na het werk drink ik een pintje" },
+  { id:"v2-09", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Elke maandag] [zij] [neemt] [de tram]",
+    hint:"Frequency expression as position 1",
+    answer:"Elke maandag neemt zij de tram" },
+  { id:"v2-10", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Vandaag] [hij] [werkt] [van thuis]",
+    hint:"Single time word, verb second",
+    answer:"Vandaag werkt hij van thuis" },
+  { id:"v2-11", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Vorig weekend] [wij] [zijn] [naar Brugge geweest]",
+    hint:"Past tense with zijn — auxiliary in slot 2, participle at the end",
+    answer:"Vorig weekend zijn wij naar Brugge geweest" },
+  { id:"v2-12", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Daarna] [ik] [ga] [naar huis]",
+    hint:"Daarna = afterwards",
+    answer:"Daarna ga ik naar huis" },
+  { id:"v2-13", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Straks] [wij] [eten] [stoofvlees]",
+    hint:"Straks = soon / shortly",
+    answer:"Straks eten wij stoofvlees" },
+  { id:"v2-14", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Op vrijdag] [hij] [koopt] [vers brood]",
+    hint:"Day phrase first, verb second",
+    answer:"Op vrijdag koopt hij vers brood" },
+  { id:"v2-15", cat:"V2 Order", type:"inversion",
+    prompt:"Rearrange: [Tijdens de vakantie] [ik] [lees] [veel boeken]",
+    hint:"Tijdens = during",
+    answer:"Tijdens de vakantie lees ik veel boeken" },
+
+  // ---- Translate ----
+  { id:"tr-01", cat:"Translate", type:"translate",
+    prompt:"Translate: 'I'd like a beer, please.'",
+    hint:"Use 'graag' for polite want",
+    answer:"Ik wil graag een pintje, alstublieft" },
+  { id:"tr-02", cat:"Translate", type:"translate",
+    prompt:"Translate: 'May I have the menu?'",
+    hint:"Mag ik + noun",
+    answer:"Mag ik de kaart" },
+  { id:"tr-03", cat:"Translate", type:"translate",
+    prompt:"Translate: 'Yesterday I ate at a good restaurant.'",
+    hint:"Perfect tense: heb + gegeten, time word first triggers V2",
+    answer:"Gisteren heb ik in een goed restaurant gegeten" },
+  { id:"tr-04", cat:"Translate", type:"translate",
+    prompt:"Translate: 'I have a brother and two sisters.'",
+    hint:"Straight present tense",
+    answer:"Ik heb een broer en twee zussen" },
+  { id:"tr-05", cat:"Translate", type:"translate",
+    prompt:"Translate: 'Could you repeat that more slowly?'",
+    hint:"Kun je + infinitive",
+    answer:"Kun je dat trager herhalen" },
+  { id:"tr-06", cat:"Translate", type:"translate",
+    prompt:"Translate: 'We're going to Bruges next weekend.'",
+    hint:"Future with 'gaan'",
+    answer:"We gaan volgend weekend naar Brugge" },
+  { id:"tr-07", cat:"Translate", type:"translate",
+    prompt:"Translate: 'I live in Antwerp.'",
+    hint:"Wonen + in + city",
+    answer:"Ik woon in Antwerpen" },
+  { id:"tr-08", cat:"Translate", type:"translate",
+    prompt:"Translate: 'Do you speak English?'",
+    hint:"Polite form, V-S inversion in question",
+    answer:"Spreekt u Engels" },
+
+  // ---- Past tense ----
+  { id:"pt-01", cat:"Past tense", type:"participle",
+    prompt:"Past participle of: WERKEN",
+    hint:"'t Kofschip: stem 'werk' ends in K → add -t",
+    answer:"gewerkt" },
+  { id:"pt-02", cat:"Past tense", type:"participle",
+    prompt:"Past participle of: WONEN",
+    hint:"Stem 'woon' ends in N → add -d",
+    answer:"gewoond" },
+  { id:"pt-03", cat:"Past tense", type:"auxiliary",
+    prompt:"Auxiliary? 'I went to Antwerp.' [ik ___ naar Antwerpen gegaan]",
+    hint:"Movement with destination → zijn",
+    answer:"ben" },
+  { id:"pt-04", cat:"Past tense", type:"auxiliary",
+    prompt:"Auxiliary? 'She ate a croissant.' [zij ___ een croissant gegeten]",
+    hint:"Eating = no movement → hebben",
+    answer:"heeft" },
+  { id:"pt-05", cat:"Past tense", type:"participle",
+    prompt:"Past participle of: KOPEN",
+    hint:"Irregular: koop → kocht",
+    answer:"gekocht" },
+  { id:"pt-06", cat:"Past tense", type:"participle",
+    prompt:"Past participle of: GAAN",
+    hint:"Common irregular movement verb",
+    answer:"gegaan" },
+  { id:"pt-07", cat:"Past tense", type:"participle",
+    prompt:"Past participle of: ZIEN",
+    hint:"Irregular: zien → ge…",
+    answer:"gezien" },
+  { id:"pt-08", cat:"Past tense", type:"participle",
+    prompt:"Past participle of: SPREKEN",
+    hint:"Strong verb, vowel changes",
+    answer:"gesproken" },
+
+  // ---- Vocab ----
+  { id:"vo-01", cat:"Vocab", type:"vocab",
+    prompt:"What does 'amai' mean?",
+    hint:"An Antwerp exclamation of surprise",
+    answer:"wow" },
+  { id:"vo-02", cat:"Vocab", type:"vocab",
+    prompt:"What does 'seffens' mean?",
+    hint:"Antwerp time word",
+    answer:"in a moment" },
+  { id:"vo-03", cat:"Vocab", type:"vocab",
+    prompt:"What does 'plezant' mean?",
+    hint:"Antwerp where standard Dutch says 'leuk'",
+    answer:"fun" },
+  { id:"vo-04", cat:"Vocab", type:"vocab",
+    prompt:"What does 'een goesting hebben' mean?",
+    hint:"You knew this in the placement test",
+    answer:"to crave something" },
+  { id:"vo-05", cat:"Vocab", type:"vocab",
+    prompt:"What does 'allez' mean?",
+    hint:"Swiss army knife Belgian filler word",
+    answer:"come on" },
+  { id:"vo-06", cat:"Vocab", type:"vocab",
+    prompt:"What does ''t Gaat' mean?",
+    hint:"Belgian reply to 'Hoe gaat het?'",
+    answer:"it goes" },
+  { id:"vo-07", cat:"Vocab", type:"vocab",
+    prompt:"What does 'tof' mean?",
+    hint:"Whole-sentence answer",
+    answer:"cool" },
+  { id:"vo-08", cat:"Vocab", type:"vocab",
+    prompt:"What does 'awel' mean?",
+    hint:"Antwerp opener",
+    answer:"well" }
+];
+
+// Map each SRS item to a course week (used for Weekly Tests)
+const SRS_WEEK_TAGS = {
+  // Week 1 — V2 fundamentals
+  "v2-01":1,"v2-03":1,"v2-04":1,"v2-09":1,"v2-10":1,"v2-12":1,"v2-13":1,"v2-14":1,"v2-15":1,
+  // Week 2 — café
+  "tr-01":2,"tr-02":2,"tr-08":2,
+  // Week 3 — food / general
+  "vo-07":3,
+  // Week 4 — past tense
+  "v2-02":4,"v2-11":4,"tr-03":4,
+  "pt-01":4,"pt-02":4,"pt-03":4,"pt-04":4,"pt-05":4,"pt-06":4,"pt-07":4,"pt-08":4,
+  // Week 5 — people
+  "tr-04":5,"tr-07":5,
+  // Week 6 — getting around
+  "v2-06":6,"v2-07":6,"v2-08":6,"tr-05":6,"tr-06":6,
+  // Week 7 — slang
+  "vo-01":7,"vo-02":7,"vo-03":7,"vo-04":7,"vo-05":7,"vo-06":7,"vo-08":7
 };
 
+// Leitner box → days until next due
+const BOX_INTERVALS = { 1:1, 2:2, 3:4, 4:8, 5:16 };
+
+// ============================================================
+// LEXICON
+// ============================================================
 const VOCAB_DATA = {
   "Week 1": [
     { fl:"Dag", en:"hi / bye", note:"Belgian workhorse greeting" },
@@ -526,13 +756,13 @@ const VOCAB_DATA = {
     { fl:"Tof", en:"cool / nice", note:"Works as a full answer" },
     { fl:"Tot straks", en:"see you later today", note:"Different from 'tot ziens'" },
     { fl:"Seffens", en:"in a moment", note:"Very Flemish time word" },
-    { fl:"Half 3", en:"2:30", note:"Trap! Half-way TO 3" }
+    { fl:"Half drie", en:"2:30", note:"Trap! Half-way TO 3" }
   ],
   "Week 2": [
     { fl:"Mag ik...?", en:"May I have...?", note:"Polite ordering standard" },
     { fl:"Ik wil graag", en:"I'd like", note:"Soft and standard" },
     { fl:"Een pintje", en:"small draft beer", note:"Pronounced PIN-cheh" },
-    { fl:"Hetzelfde graag", en:"Same again please", note:"Key phrase!" },
+    { fl:"Hetzelfde graag", en:"Same again please", note:"Key phrase" },
     { fl:"De rekening", en:"the bill", note:"Mag ik de rekening?" },
     { fl:"Nog een keer", en:"one more time", note:"For repetition requests" },
     { fl:"Trager", en:"more slowly", note:"Kun je trager spreken?" },
@@ -542,278 +772,298 @@ const VOCAB_DATA = {
     { fl:"Een frietje", en:"portion of chips", note:"Always het (diminutive)" },
     { fl:"Met mayonaise", en:"with mayo", note:"The only correct answer" },
     { fl:"De dagschotel", en:"daily special", note:"= plat du jour" },
-    { fl:"Een tafeltje", en:"a small table", note:"Sounds friendlier!" },
+    { fl:"Een tafeltje", en:"a small table", note:"Sounds friendlier" },
     { fl:"Op het terras", en:"on the terrace", note:"Summer essential" },
     { fl:"We zijn met drie", en:"there are three of us", note:"Restaurant arrival" },
-    { fl:"Biertje", en:"casual beer", note:"diminutive softens register" },
+    { fl:"Biertje", en:"casual beer", note:"Diminutive softens register" },
     { fl:"Stoofvlees", en:"Flemish beef stew", note:"Must-order in Antwerp" }
   ],
   "Week 4": [
-    { fl:"Heb je gezien", en:"have you seen", note:"irregular: zien → gezien" },
+    { fl:"Heb je gezien", en:"have you seen", note:"Irregular: zien → gezien" },
     { fl:"Ik ben geweest", en:"I have been", note:"zijn + geweest" },
     { fl:"Ik heb gegeten", en:"I have eaten", note:"hebben + gegeten" },
     { fl:"Wij zijn gegaan", en:"we went", note:"movement = zijn" },
-    { fl:"Gisteren keer", en:"yesterday", note:"Idiomatic Antwerp casual" },
     { fl:"Ik heb gewerkt", en:"I worked", note:"'t kofschip → -t" },
     { fl:"Hij is gekomen", en:"he came", note:"komen = zijn verb" },
     { fl:"Heb je dat al gedaan?", en:"have you done that yet?", note:"Al = already" }
   ],
   "Week 5": [
-    { fl:"Mijn vriendin", en:"my girlfriend / female friend", note:"context dependent" },
-    { fl:"Zijn broer", en:"his brother", note:"zijn = his (not to be confused with zijn = to be)" },
+    { fl:"Mijn vriendin", en:"my girlfriend / female friend", note:"Context dependent" },
+    { fl:"Zijn broer", en:"his brother", note:"zijn = his (vs zijn = to be)" },
     { fl:"Onze tuin", en:"our garden", note:"de-word → onze" },
     { fl:"Ons huis", en:"our house", note:"het-word → ons" },
-    { fl:"Uwe", en:"your (informal Antwerp)", note:"you'll hear it, don't need to use it" },
-    { fl:"Een leuke vriend", en:"a nice friend", note:"adjective gets -e before noun" },
+    { fl:"Een leuke vriend", en:"a nice friend", note:"adjective takes -e before noun" },
     { fl:"De vriend is leuk", en:"the friend is nice", note:"predicative: no -e" },
-    { fl:"Een leuk huis", en:"a nice house", note:"exception: indefinite het-word, no -e" }
+    { fl:"Een leuk huis", en:"a nice house", note:"indefinite het-word, no -e" }
   ],
   "Week 6": [
     { fl:"Op de tram", en:"on the tram", note:"op for transport you board" },
     { fl:"In de auto", en:"in the car", note:"in for enclosed vehicles" },
     { fl:"Naar het werk", en:"to work", note:"naar = to (destination)" },
     { fl:"Bij Jan", en:"at Jan's place", note:"bij = at someone's" },
-    { fl:"Aan de Schelde", en:"on the Schelde", note:"aan for riverside/waterfront" },
-    { fl:"Ik ga morgen werken", en:"I'm going to work tomorrow", note:"gaan + infinitive = near future" },
+    { fl:"Aan de Schelde", en:"on the Schelde", note:"aan for waterfront" },
+    { fl:"Ik ga morgen werken", en:"I'm going to work tomorrow", note:"gaan + infinitive" },
     { fl:"Ik zal het doen", en:"I'll do it", note:"zullen = promise/prediction" },
     { fl:"Langs de Meir", en:"along the Meir", note:"langs = along/past" }
   ],
   "Week 7": [
     { fl:"Allez", en:"come on / alright then", note:"Swiss army filler word" },
     { fl:"Awel", en:"well / so then", note:"Antwerp opener" },
-    { fl:"Amai", en:"wow / oof", note:"You knew this already!" },
-    { fl:"Toch", en:"right? / still / anyway", note:"chameleon word" },
-    { fl:"Eigenlijk", en:"actually", note:"softens claims" },
-    { fl:"Gewoon", en:"just", note:"softens commands" },
-    { fl:"Ik zou willen", en:"I would like", note:"conditional = polite" },
-    { fl:"Zeg!", en:"hey! / cool, eh!", note:"Tof, zeg! = Cool, right!" }
+    { fl:"Amai", en:"wow / oof", note:"Antwerp surprise" },
+    { fl:"Toch", en:"right? / still / anyway", note:"Chameleon word" },
+    { fl:"Eigenlijk", en:"actually", note:"Softens claims" },
+    { fl:"Gewoon", en:"just", note:"Softens commands" },
+    { fl:"Ik zou willen", en:"I would like", note:"Conditional = polite" },
+    { fl:"Zeg!", en:"hey! / right!", note:"Tof, zeg! = Cool, right!" }
   ]
 };
 
-// ========== STATE ==========
-const STATE_KEY = "vlaams_sprint_v3";
+// ============================================================
+// STATE
+// ============================================================
+const STATE_KEY = "vlaams_sprint_v4";
+const COURSE_START = new Date("2026-05-09");
+const TODAY = new Date("2026-05-16"); // pinned per existing app convention
+
+function todayKey() { return TODAY.toISOString().slice(0,10); }
+function dateKey(d) { return d.toISOString().slice(0,10); }
+function addDays(base, n) { const d = new Date(base); d.setDate(d.getDate()+n); return d; }
+
+function defaultState() {
+  // SRS: { [id]: { box, due, lastSeen, correctCount, wrongCount } }
+  // weeklyTests: { [week]: { best, attempts, passed } }
+  return {
+    days:{}, fieldTests:{}, streak:0, lastActive:null,
+    srs:{}, weeklyTests:{},
+    quizSession:{ category:"All", lastFeedback:null, score:0, total:0 }
+  };
+}
 function loadState() {
   try {
     const s = localStorage.getItem(STATE_KEY);
-    if (s) return JSON.parse(s);
+    if (s) {
+      const parsed = JSON.parse(s);
+      // shallow merge so new keys are picked up
+      return Object.assign(defaultState(), parsed);
+    }
   } catch(e) {}
-  return { days:{}, fieldTests:{}, streak:0, lastActive:null };
+  return defaultState();
 }
 function saveState() {
+  if (VISITOR_MODE) return;
   try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch(e) {}
 }
+
 let state = loadState();
 
-function getTodayKey() {
-  return new Date().toISOString().slice(0,10);
+// ============================================================
+// VISITOR / SHARE MODE
+// ============================================================
+let VISITOR_MODE = false;
+let VISITOR_DATA = null;
+
+function parseShareParam() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("share") !== "true") return null;
+  const data = {
+    streak: parseInt(params.get("streak") || "0", 10),
+    days: parseInt(params.get("days") || "0", 10),
+    progress: parseInt(params.get("progress") || "0", 10),
+    week: parseInt(params.get("week") || "1", 10)
+  };
+  return data;
 }
 
-function markDay(weekIdx, dayIdx) {
-  const key = `w${weekIdx}_d${dayIdx}`;
-  const wasAlreadyDone = state.days[key];
-  state.days[key] = !wasAlreadyDone;
-  
-  if (!wasAlreadyDone) {
-    // check if today's streak
-    const today = getTodayKey();
-    state.lastActive = today;
-    recalcStreak();
-    if (isFirstDayToday(weekIdx, dayIdx)) confettiBurst();
-  } else {
-    recalcStreak();
-  }
-  saveState();
-  renderDashboard();
+function buildShareLink() {
+  const total = getDoneCount();
+  const progress = Math.round((total / 49) * 100);
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.searchParams.set("share","true");
+  url.searchParams.set("streak", state.streak);
+  url.searchParams.set("days", total);
+  url.searchParams.set("progress", progress);
+  url.searchParams.set("week", getCurrentWeek() + 1);
+  return url.toString();
 }
 
-function isFirstDayToday(w, d) {
-  // fire confetti only on completing a new day
-  return true;
+function showShareToast(msg) {
+  const t = document.getElementById("share-toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2400);
 }
 
-// Course started May 9 2026; each lesson day maps to a real calendar date
-const COURSE_START = new Date("2026-05-09");
+function setupShareUI() {
+  const btn = document.getElementById("share-btn");
+  const row = document.getElementById("share-row");
+  const linkInput = document.getElementById("share-link");
+  const copyBtn = document.getElementById("copy-link");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    linkInput.value = buildShareLink();
+    row.style.display = "flex";
+    linkInput.select();
+  });
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(linkInput.value);
+      showShareToast("Link copied — send it to Chris ✓");
+    } catch {
+      linkInput.select();
+      document.execCommand("copy");
+      showShareToast("Link copied ✓");
+    }
+  });
+}
 
+function activateVisitorMode(data) {
+  VISITOR_MODE = true;
+  VISITOR_DATA = data;
+  document.body.classList.add("visitor");
+  const banner = document.createElement("div");
+  banner.className = "visitor-banner";
+  banner.innerHTML = "Viewing Val's Vlaams Sprint Progress! "
+    + "<small>Read-only snapshot shared with Chris</small>";
+  document.getElementById("visitor-banner-host").appendChild(banner);
+}
+
+// ============================================================
+// LESSON CALENDAR HELPERS
+// ============================================================
 function lessonDateKey(weekIdx, dayIdx) {
-  const totalDay = weekIdx * 7 + dayIdx;
-  const dt = new Date(COURSE_START);
-  dt.setDate(COURSE_START.getDate() + totalDay);
-  return dt.toISOString().slice(0, 10);
+  const total = weekIdx * 7 + dayIdx;
+  return dateKey(addDays(COURSE_START, total));
 }
 
 function recalcStreak() {
-  // Build a set of calendar dates that have at least one lesson completed
   const doneDates = new Set();
   for (let w = 0; w < 7; w++) {
     for (let d = 0; d < 7; d++) {
-      if (state.days[`w${w}_d${d}`]) {
-        doneDates.add(lessonDateKey(w, d));
-      }
+      if (state.days[`w${w}_d${d}`]) doneDates.add(lessonDateKey(w, d));
     }
   }
-  // Count consecutive days going back from today
   let streak = 0;
-  const today = new Date("2026-05-16");
   for (let i = 0; i < 49; i++) {
-    const dt = new Date(today);
-    dt.setDate(today.getDate() - i);
-    const dk = dt.toISOString().slice(0, 10);
-    if (doneDates.has(dk)) {
-      streak++;
-    } else {
-      break;
-    }
+    const dk = dateKey(addDays(TODAY, -i));
+    if (doneDates.has(dk)) streak++;
+    else break;
   }
   state.streak = streak;
 }
 
-function getDoneCount() {
-  return Object.values(state.days).filter(Boolean).length;
+function getDoneCount() { return Object.values(state.days).filter(Boolean).length; }
+function getWeekProgress(w) {
+  let n = 0;
+  for (let d = 0; d < 7; d++) if (state.days[`w${w}_d${d}`]) n++;
+  return n;
 }
-
-function getWeekProgress(weekIdx) {
-  let done = 0;
-  for (let d = 0; d < 7; d++) {
-    if (state.days[`w${weekIdx}_d${d}`]) done++;
-  }
-  return done;
-}
-
 function getCurrentWeek() {
-  for (let w = 0; w < 7; w++) {
-    if (getWeekProgress(w) < 7) return w;
-  }
+  for (let w = 0; w < 7; w++) if (getWeekProgress(w) < 7) return w;
   return 6;
 }
 
-// ========== RENDER DASHBOARD ==========
-function renderDashboard() {
-  const total = getDoneCount();
-  const streak = state.streak;
-  const curWeek = getCurrentWeek();
-
-  document.getElementById("stat-streak").textContent = streak;
-  document.getElementById("stat-days").textContent = total;
-  document.getElementById("stat-week").textContent = curWeek + 1;
-  document.getElementById("stat-week-name").textContent = WEEKS[curWeek].name;
-  document.getElementById("nav-streak").textContent = streak;
-
-  renderHeatmap();
-  renderWeekGrid(curWeek);
+// ============================================================
+// SRS ENGINE — Leitner with 5 boxes
+// ----
+// Bump rules:
+//   - New item: box 1, due today
+//   - Correct: box = min(box+1, 5); due = today + interval(newBox)
+//   - Wrong:   box = 1;             due = today + interval(1) = tomorrow
+// Intervals (days):  1, 2, 4, 8, 16
+// Due selection priority:
+//   1. Items overdue / due today (oldest due first)
+//   2. If session category != All → restrict to that category
+//   3. Tiebreaker: lower box (less mastered) first, then stable id
+// ============================================================
+function ensureSrsRecord(itemId) {
+  if (!state.srs[itemId]) {
+    state.srs[itemId] = {
+      box: 1, due: todayKey(), lastSeen: null,
+      correctCount: 0, wrongCount: 0
+    };
+  }
+  return state.srs[itemId];
 }
 
-function renderHeatmap() {
-  const weeksEl = document.getElementById("heatmap-weeks");
-  weeksEl.innerHTML = "";
-  const monthsEl = document.getElementById("heatmap-months");
-  monthsEl.innerHTML = "";
-
-  // Build date -> level map from actual lesson completions
-  const lessonDates = {};
-  for (let w = 0; w < 7; w++) {
-    for (let d = 0; d < 7; d++) {
-      const dk = lessonDateKey(w, d);
-      lessonDates[dk] = state.days[`w${w}_d${d}`] ? 4 : 0;
-    }
-  }
-
-  // Grid starts Monday 4 May 2026 (so May 9 falls in week 2, visible clearly)
-  const gridStart = new Date("2026-05-04");
-  const NUM_WEEKS = 14;
-  let lastMonth = "";
-  const monthColSpans = {};
-
-  for (let w = 0; w < NUM_WEEKS; w++) {
-    const col = document.createElement("div");
-    col.className = "heatmap-week-col";
-
-    for (let d = 0; d < 7; d++) {
-      const dt = new Date(gridStart);
-      dt.setDate(gridStart.getDate() + w * 7 + d);
-      const dk = dt.toISOString().slice(0, 10);
-      const level = lessonDates[dk] || 0;
-
-      const cell = document.createElement("div");
-      cell.className = "heatmap-cell" + (level ? ` l${level}` : "");
-      const label = dt.toLocaleDateString("en-GB", {day:"numeric", month:"short"});
-      cell.title = label + (level ? " ✓" : "");
-      col.appendChild(cell);
-
-      if (d === 0) {
-        const month = dt.toLocaleString("en", { month: "short" });
-        if (month !== lastMonth) { monthColSpans[w] = month; lastMonth = month; }
-      }
-    }
-    weeksEl.appendChild(col);
-  }
-
-  for (let w = 0; w < NUM_WEEKS; w++) {
-    const span = document.createElement("div");
-    span.className = "heatmap-month-label";
-    span.style.flex = "1";
-    span.textContent = monthColSpans[w] || "";
-    monthsEl.appendChild(span);
-  }
+function srsBumpCorrect(itemId) {
+  const r = ensureSrsRecord(itemId);
+  r.box = Math.min(r.box + 1, 5);
+  r.due = dateKey(addDays(TODAY, BOX_INTERVALS[r.box]));
+  r.lastSeen = todayKey();
+  r.correctCount++;
+  return r;
 }
 
-function renderWeekGrid(curWeek) {
-  const grid = document.getElementById("week-grid");
-  grid.innerHTML = "";
+function srsBumpWrong(itemId) {
+  const r = ensureSrsRecord(itemId);
+  r.box = 1;
+  r.due = dateKey(addDays(TODAY, BOX_INTERVALS[1]));
+  r.lastSeen = todayKey();
+  r.wrongCount++;
+  return r;
+}
 
-  WEEKS.forEach((wk, wi) => {
-    const done = getWeekProgress(wi);
-    const isLocked = wi > curWeek + 1;
-    const isDone = done === 7;
-    const isCurrent = wi === curWeek;
-
-    const card = document.createElement("div");
-    card.className = "week-card" + (isCurrent ? " current" : "") + (isDone ? " done" : "");
-
-    const badgeClass = isDone ? "badge-done" : isCurrent ? "badge-current" : isLocked ? "badge-locked" : "badge-unlocked";
-    const badgeText = isDone ? "✓ Complete" : isCurrent ? "Active" : isLocked ? "Locked" : "Up next";
-
-    card.innerHTML = `
-      <div class="week-header">
-        <div class="week-num">${wk.num}</div>
-        <div class="week-info">
-          <div class="week-name">${wk.name}</div>
-          <div class="week-goal">${wk.goal}</div>
-        </div>
-        <span class="week-badge ${badgeClass}">${badgeText}</span>
-      </div>
-      <div class="week-progress-bar">
-        <div class="week-progress-fill" style="width:${(done/7)*100}%"></div>
-      </div>
-      <div class="week-days" id="wk-days-${wi}"></div>
-    `;
-
-    grid.appendChild(card);
-
-    const daysEl = card.querySelector(`#wk-days-${wi}`);
-    wk.days.forEach((dayName, di) => {
-      const key = `w${wi}_d${di}`;
-      const isDayDone = !!state.days[key];
-      const isReview = di === 6;
-      const isLk = wi > curWeek + 1 || (wi === curWeek + 1 && di > 0 && !state.days[`w${wi}_d${di-1}`]);
-      const btn = document.createElement("button");
-      btn.className = "day-btn" + (isDayDone ? " done" : "") + (isLk && !isDayDone ? " locked" : "") + (isReview ? " review" : "");
-      const dayDate = lessonDateKey(wi, di);
-      const dayDateFmt = new Date(dayDate).toLocaleDateString("en-GB", {day:"numeric", month:"short"});
-      btn.title = dayDateFmt;
-      btn.innerHTML = `
-        <div class="day-num">${di + 1}</div>
-        <div class="day-check">${isDayDone ? "✓" : isReview ? "★" : "·"}</div>
-        <div class="day-label" style="font-size:8px">${dayDateFmt}</div>
-      `;
-      if (!isLk || isDayDone) {
-        btn.onclick = () => markDay(wi, di);
-      }
-      daysEl.appendChild(btn);
-    });
+function getDueItems(category) {
+  const today = todayKey();
+  const filtered = SRS_BANK.filter(it => category === "All" || it.cat === category);
+  const due = [];
+  const future = [];
+  filtered.forEach(it => {
+    const r = ensureSrsRecord(it.id);
+    if (r.due <= today) due.push({ item: it, rec: r });
+    else future.push({ item: it, rec: r });
   });
+  due.sort((a,b) => {
+    if (a.rec.due !== b.rec.due) return a.rec.due < b.rec.due ? -1 : 1;
+    if (a.rec.box !== b.rec.box) return a.rec.box - b.rec.box;
+    return a.item.id < b.item.id ? -1 : 1;
+  });
+  return { due, future };
 }
 
-// ========== CONFETTI ==========
+function getBoxCounts() {
+  const counts = {1:0,2:0,3:0,4:0,5:0};
+  SRS_BANK.forEach(it => {
+    const r = ensureSrsRecord(it.id);
+    counts[r.box]++;
+  });
+  return counts;
+}
+
+function normalize(s) {
+  return (s || "").toLowerCase().trim()
+    .replace(/[.,!?;:'"]/g,"")
+    .replace(/\s+/g," ");
+}
+
+function gradeAnswer(userInput, correctAnswer, type) {
+  const u = normalize(userInput);
+  const c = normalize(correctAnswer);
+  if (!u) return false;
+  if (u === c) return true;
+  // Word-order types: require exact or 90% word match in the correct order
+  if (type === "inversion" || type === "translate") {
+    const uw = u.split(" ");
+    const cw = c.split(" ");
+    if (Math.abs(uw.length - cw.length) > 1) return false;
+    let matched = 0;
+    cw.forEach((word, i) => { if (uw[i] === word) matched++; });
+    return matched / cw.length >= 0.9;
+  }
+  // Single-word types: exact normalised match only
+  return false;
+}
+
+function describeNextDue(rec) {
+  const days = BOX_INTERVALS[rec.box];
+  if (days === 1) return "Next review: tomorrow";
+  return `Next review: in ${days} days`;
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
 function confettiBurst() {
   const colors = ["#FC4C02","#f5a623","#2ecc71","#3a9bd5","#e74c3c","#ffffff"];
   for (let i = 0; i < 40; i++) {
@@ -830,205 +1080,761 @@ function confettiBurst() {
   }
 }
 
-// ========== QUIZ ==========
-let quizCat = "V2 Order";
-let quizIdx = 0;
-let quizScore = 0;
-let quizTotal = 0;
-let quizAnswered = false;
+// ============================================================
+// DASHBOARD
+// ============================================================
+function markDay(weekIdx, dayIdx) {
+  if (VISITOR_MODE) return;
+  const key = `w${weekIdx}_d${dayIdx}`;
+  const wasDone = state.days[key];
+  state.days[key] = !wasDone;
+  if (!wasDone) {
+    state.lastActive = todayKey();
+    confettiBurst();
+  }
+  recalcStreak();
+  saveState();
+  renderDashboard();
+}
 
-function initQuiz() {
+function renderDashboard() {
+  if (VISITOR_MODE && VISITOR_DATA) {
+    document.getElementById("stat-streak").textContent = VISITOR_DATA.streak;
+    document.getElementById("stat-days").textContent = VISITOR_DATA.days;
+    document.getElementById("stat-week").textContent = VISITOR_DATA.week;
+    const wk = WEEKS[Math.max(0, Math.min(6, VISITOR_DATA.week - 1))];
+    document.getElementById("stat-week-name").textContent = wk ? wk.name : "";
+    document.getElementById("nav-streak").textContent = VISITOR_DATA.streak;
+  } else {
+    const total = getDoneCount();
+    const cur = getCurrentWeek();
+    document.getElementById("stat-streak").textContent = state.streak;
+    document.getElementById("stat-days").textContent = total;
+    document.getElementById("stat-week").textContent = cur + 1;
+    document.getElementById("stat-week-name").textContent = WEEKS[cur].name;
+    document.getElementById("nav-streak").textContent = state.streak;
+  }
+  renderHeatmap();
+  renderWeekGrid();
+}
+
+function renderHeatmap() {
+  const weeksEl = document.getElementById("heatmap-weeks");
+  const monthsEl = document.getElementById("heatmap-months");
+  weeksEl.innerHTML = "";
+  monthsEl.innerHTML = "";
+
+  const lessonDates = {};
+  if (VISITOR_MODE) {
+    // Visitor: synthesise heatmap from progress %
+    const filled = Math.round((VISITOR_DATA.progress / 100) * 49);
+    for (let i = 0; i < filled; i++) {
+      lessonDates[lessonDateKey(Math.floor(i/7), i%7)] = 4;
+    }
+  } else {
+    for (let w = 0; w < 7; w++) {
+      for (let d = 0; d < 7; d++) {
+        lessonDates[lessonDateKey(w,d)] = state.days[`w${w}_d${d}`] ? 4 : 0;
+      }
+    }
+  }
+
+  const gridStart = new Date("2026-05-04");
+  const NUM_WEEKS = 14;
+  let lastMonth = ""; const monthCols = {};
+  for (let w = 0; w < NUM_WEEKS; w++) {
+    const col = document.createElement("div");
+    col.className = "heatmap-week-col";
+    for (let d = 0; d < 7; d++) {
+      const dt = addDays(gridStart, w*7 + d);
+      const dk = dateKey(dt);
+      const level = lessonDates[dk] || 0;
+      const cell = document.createElement("div");
+      cell.className = "heatmap-cell" + (level ? ` l${level}` : "");
+      cell.title = dt.toLocaleDateString("en-GB",{day:"numeric",month:"short"}) + (level ? " ✓" : "");
+      col.appendChild(cell);
+      if (d === 0) {
+        const m = dt.toLocaleString("en",{month:"short"});
+        if (m !== lastMonth) { monthCols[w] = m; lastMonth = m; }
+      }
+    }
+    weeksEl.appendChild(col);
+  }
+  for (let w = 0; w < NUM_WEEKS; w++) {
+    const span = document.createElement("div");
+    span.className = "heatmap-month-label";
+    span.style.flex = "1";
+    span.textContent = monthCols[w] || "";
+    monthsEl.appendChild(span);
+  }
+}
+
+function renderWeekGrid() {
+  const grid = document.getElementById("week-grid");
+  grid.innerHTML = "";
+  const cur = VISITOR_MODE
+    ? Math.max(0, Math.min(6, (VISITOR_DATA?.week || 1) - 1))
+    : getCurrentWeek();
+
+  WEEKS.forEach((wk, wi) => {
+    const done = VISITOR_MODE
+      ? (wi < cur ? 7 : (wi === cur ? Math.min(7, Math.round((VISITOR_DATA.progress/100)*49) - cur*7) : 0))
+      : getWeekProgress(wi);
+    const isLocked = wi > cur + 1;
+    const isDone = done === 7;
+    const isCurrent = wi === cur;
+
+    const card = document.createElement("div");
+    card.className = "week-card" + (isCurrent ? " current" : "") + (isDone ? " done" : "");
+    const badgeClass = isDone ? "badge-done" : isCurrent ? "badge-current" : isLocked ? "badge-locked" : "badge-unlocked";
+    const badgeText  = isDone ? "✓ Complete" : isCurrent ? "Active" : isLocked ? "Locked" : "Up next";
+
+    card.innerHTML = `
+      <div class="week-header">
+        <div class="week-num">${wk.num}</div>
+        <div class="week-info">
+          <div class="week-name">${wk.name}</div>
+          <div class="week-goal">${wk.goal}</div>
+        </div>
+        <span class="week-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="week-progress-bar">
+        <div class="week-progress-fill" style="width:${(done/7)*100}%"></div>
+      </div>
+      <div class="week-days" id="wk-days-${wi}"></div>`;
+    grid.appendChild(card);
+
+    const daysEl = card.querySelector(`#wk-days-${wi}`);
+    wk.days.forEach((_, di) => {
+      const key = `w${wi}_d${di}`;
+      const isDayDone = VISITOR_MODE
+        ? di < done
+        : !!state.days[key];
+      const isReview = di === 6;
+      const isLk = !VISITOR_MODE && (
+        wi > cur + 1 ||
+        (wi === cur + 1 && di > 0 && !state.days[`w${wi}_d${di-1}`])
+      );
+      const btn = document.createElement("button");
+      btn.className = "day-btn" + (isDayDone ? " done" : "")
+        + (isLk && !isDayDone ? " locked" : "")
+        + (isReview ? " review" : "");
+      const dk = lessonDateKey(wi, di);
+      const dkFmt = new Date(dk).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+      btn.title = dkFmt;
+      btn.innerHTML = `
+        <div class="day-num">${di+1}</div>
+        <div class="day-check">${isDayDone ? "✓" : isReview ? "★" : "·"}</div>
+        <div class="day-label" style="font-size:8px">${dkFmt}</div>`;
+      if (!VISITOR_MODE && (!isLk || isDayDone)) {
+        btn.onclick = () => markDay(wi, di);
+      } else if (VISITOR_MODE) {
+        btn.style.cursor = "default";
+      }
+      daysEl.appendChild(btn);
+    });
+  });
+}
+
+// ============================================================
+// SRS QUIZ — preserves state across tab switches
+// ============================================================
+const QUIZ_CATS = ["All","V2 Order","Translate","Past tense","Vocab"];
+const quizUi = {
+  initialized:false,
+  currentItemId:null,
+  answered:false,
+  isCorrect:false
+};
+
+function initQuizOnce() {
+  if (quizUi.initialized) return;
+  quizUi.initialized = true;
+
   const catsEl = document.getElementById("quiz-cats");
   catsEl.innerHTML = "";
-  Object.keys(QUIZ_QUESTIONS).forEach(cat => {
+  QUIZ_CATS.forEach(cat => {
     const btn = document.createElement("button");
-    btn.className = "cat-btn" + (cat === quizCat ? " active" : "");
+    btn.className = "cat-btn" + (cat === state.quizSession.category ? " active" : "");
     btn.textContent = cat;
-    btn.onclick = () => {
-      quizCat = cat;
-      quizIdx = 0; quizScore = 0; quizTotal = 0; quizAnswered = false;
-      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      loadQuestion();
-    };
+    btn.dataset.cat = cat;
+    btn.addEventListener("click", () => {
+      state.quizSession.category = cat;
+      state.quizSession.score = 0;
+      state.quizSession.total = 0;
+      state.quizSession.lastFeedback = null;
+      saveState();
+      document.querySelectorAll("#quiz-cats .cat-btn").forEach(b =>
+        b.classList.toggle("active", b.dataset.cat === cat));
+      pickNextDueItem();
+      renderQuiz();
+    });
     catsEl.appendChild(btn);
   });
-  loadQuestion();
-}
 
-function loadQuestion() {
-  const qs = QUIZ_QUESTIONS[quizCat];
-  const q = qs[quizIdx % qs.length];
-  const total = qs.length;
-
-  document.getElementById("quiz-q-label").textContent = q.type === "inversion" ? "Word Order (V2 Rule)" :
-    q.type === "translate" ? "Translate to Flemish" :
-    q.type === "participle" ? "Past Participle" :
-    q.type === "auxiliary" ? "Hebben or zijn?" : "Vocabulary";
-  document.getElementById("quiz-prompt").textContent = q.q;
-  document.getElementById("quiz-hint").textContent = "💡 " + q.hint;
-  document.getElementById("quiz-prog-fill").style.width = ((quizIdx % total) / total * 100) + "%";
-
+  document.getElementById("quiz-submit").addEventListener("click", checkAnswer);
+  document.getElementById("quiz-next").addEventListener("click", advanceQuiz);
   const input = document.getElementById("quiz-input");
-  input.value = "";
-  input.className = "quiz-input";
-  input.disabled = false;
-  input.focus();
-
-  document.getElementById("quiz-feedback").className = "quiz-feedback";
-  document.getElementById("quiz-submit").disabled = false;
-  document.getElementById("quiz-next").style.display = "none";
-  document.getElementById("quiz-score-val").textContent = quizScore;
-  document.getElementById("quiz-total-val").textContent = quizTotal;
-  quizAnswered = false;
+  input.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    if (!quizUi.answered) checkAnswer();
+    else advanceQuiz();
+  });
 }
 
-function normalize(s) {
-  return s.toLowerCase().trim()
-    .replace(/[.,!?]/g,"")
-    .replace(/\s+/g," ")
-    .replace(/ij/g,"ij");
+function pickNextDueItem() {
+  const cat = state.quizSession.category;
+  const { due, future } = getDueItems(cat);
+  if (due.length > 0) {
+    quizUi.currentItemId = due[0].item.id;
+  } else if (future.length > 0) {
+    // No items due — but offer drilling on the soonest-due one in this category
+    quizUi.currentItemId = null;
+  } else {
+    quizUi.currentItemId = null;
+  }
+  quizUi.answered = false;
+  quizUi.isCorrect = false;
+}
+
+function renderQuiz() {
+  if (VISITOR_MODE) return;
+  initQuizOnce();
+  renderSrsBoxes();
+
+  const cat = state.quizSession.category;
+  const { due } = getDueItems(cat);
+  document.getElementById("srs-due-pill").textContent = `${due.length} due`;
+
+  const activeEl = document.getElementById("quiz-active");
+  const emptyEl = document.getElementById("quiz-empty");
+
+  if (!quizUi.currentItemId) pickNextDueItem();
+
+  if (!quizUi.currentItemId) {
+    activeEl.style.display = "none";
+    emptyEl.style.display = "block";
+    return;
+  }
+  activeEl.style.display = "block";
+  emptyEl.style.display = "none";
+
+  const item = SRS_BANK.find(i => i.id === quizUi.currentItemId);
+  if (!item) { pickNextDueItem(); return renderQuiz(); }
+  const rec = ensureSrsRecord(item.id);
+
+  document.getElementById("quiz-q-label").textContent = labelForType(item.type);
+  document.getElementById("quiz-box-tag").textContent = `Box ${rec.box}/5`;
+  document.getElementById("quiz-prompt").textContent = item.prompt;
+  document.getElementById("quiz-hint").textContent = "💡 " + item.hint;
+
+  const totalDue = Math.max(due.length, 1);
+  const idx = Math.max(0, totalDue - due.length);
+  document.getElementById("quiz-prog-fill").style.width = `${(idx/totalDue)*100}%`;
+
+  document.getElementById("quiz-score-val").textContent = state.quizSession.score;
+  document.getElementById("quiz-total-val").textContent = state.quizSession.total;
+
+  applyFeedbackToDom();
+}
+
+function labelForType(t) {
+  return t === "inversion" ? "Word order (V2)" :
+         t === "translate" ? "Translate to Flemish" :
+         t === "participle" ? "Past participle" :
+         t === "auxiliary" ? "Hebben or zijn?" : "Vocabulary";
+}
+
+function applyFeedbackToDom() {
+  const input = document.getElementById("quiz-input");
+  const fb = document.getElementById("quiz-feedback");
+  const submit = document.getElementById("quiz-submit");
+  const next = document.getElementById("quiz-next");
+  const last = state.quizSession.lastFeedback;
+
+  if (!last || last.itemId !== quizUi.currentItemId) {
+    input.value = "";
+    input.className = "quiz-input";
+    input.disabled = false;
+    fb.className = "quiz-feedback";
+    fb.innerHTML = "";
+    submit.disabled = false;
+    next.style.display = "none";
+    quizUi.answered = false;
+    setTimeout(() => input.focus(), 30);
+    return;
+  }
+  // Re-apply previous feedback so a tab-switch round-trip preserves it
+  input.value = last.userInput || "";
+  input.className = "quiz-input " + (last.isCorrect ? "correct" : "wrong");
+  input.disabled = true;
+  fb.className = "quiz-feedback " + (last.isCorrect ? "correct" : "wrong");
+  fb.innerHTML = last.html;
+  submit.disabled = true;
+  next.style.display = "block";
+  quizUi.answered = true;
+  quizUi.isCorrect = last.isCorrect;
+}
+
+function renderSrsBoxes() {
+  const host = document.getElementById("srs-boxes");
+  if (!host) return;
+  const counts = getBoxCounts();
+  host.innerHTML = "";
+  for (let b = 1; b <= 5; b++) {
+    const div = document.createElement("div");
+    div.className = `srs-box box-${b}`;
+    div.innerHTML = `<div class="srs-box-num">${counts[b]}</div>
+      <div class="srs-box-label">Box ${b}</div>`;
+    host.appendChild(div);
+  }
 }
 
 function checkAnswer() {
-  if (quizAnswered) return;
-  const qs = QUIZ_QUESTIONS[quizCat];
-  const q = qs[quizIdx % qs.length];
-  const input = document.getElementById("quiz-input");
-  const user = normalize(input.value);
-  const correct = normalize(q.answer);
+  if (quizUi.answered || !quizUi.currentItemId) return;
+  const item = SRS_BANK.find(i => i.id === quizUi.currentItemId);
+  if (!item) return;
+  const userInput = document.getElementById("quiz-input").value;
+  const isCorrect = gradeAnswer(userInput, item.answer, item.type);
 
-  // Flexible check: contains key words
-  const userWords = user.split(" ");
-  const correctWords = correct.split(" ");
-  const overlap = correctWords.filter(w => w.length > 2 && userWords.includes(w)).length;
-  const isCorrect = user === correct || overlap >= Math.ceil(correctWords.length * 0.7);
+  const rec = isCorrect ? srsBumpCorrect(item.id) : srsBumpWrong(item.id);
+  state.quizSession.total++;
+  if (isCorrect) state.quizSession.score++;
 
-  quizTotal++;
-  if (isCorrect) {
-    quizScore++;
-    input.className = "quiz-input correct";
-    document.getElementById("quiz-feedback").className = "quiz-feedback correct";
-    document.getElementById("quiz-feedback").innerHTML = `<strong>Goed gedaan! ✓</strong> "${q.answer}"`;
-  } else {
-    input.className = "quiz-input wrong";
-    document.getElementById("quiz-feedback").className = "quiz-feedback wrong";
-    document.getElementById("quiz-feedback").innerHTML = `<strong>Not quite.</strong> The answer was: <em>"${q.answer}"</em>`;
-  }
+  const nextDueLine = describeNextDue(rec);
+  const html = isCorrect
+    ? `<strong>Goed gedaan! ✓</strong> "${item.answer}"
+       <span class="next-due">Box ${rec.box}/5 · ${nextDueLine}</span>`
+    : `<strong>Not quite.</strong> Answer: <em>"${item.answer}"</em>
+       <span class="next-due">Reset to box 1 · ${nextDueLine}</span>`;
 
-  document.getElementById("quiz-submit").disabled = true;
-  document.getElementById("quiz-next").style.display = "block";
-  document.getElementById("quiz-score-val").textContent = quizScore;
-  document.getElementById("quiz-total-val").textContent = quizTotal;
-  quizAnswered = true;
+  state.quizSession.lastFeedback = {
+    itemId: item.id, userInput, isCorrect, html
+  };
+  saveState();
+  applyFeedbackToDom();
+  renderSrsBoxes();
 }
 
-function nextQuestion() {
-  quizIdx++;
-  loadQuestion();
+function advanceQuiz() {
+  state.quizSession.lastFeedback = null;
+  saveState();
+  pickNextDueItem();
+  renderQuiz();
 }
 
-document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && document.getElementById("page-quiz").classList.contains("active")) {
-    if (!quizAnswered) checkAnswer();
-    else nextQuestion();
+// ============================================================
+// WEEKLY TESTS
+// 5-question graded test per course week.
+// Pulls items tagged for that week (SRS_WEEK_TAGS), picks 5 randomly,
+// scores out of 5. Pass = ≥4 correct (80%). Records best score and
+// pass status. Locked until the previous week's test is passed
+// (week 1 is always available).
+// ============================================================
+const WT_PASS_THRESHOLD = 4; // out of 5
+const WT_QUESTIONS = 5;
+
+const wtUi = {
+  active:null  // { week, items[], idx, score, answers:[{itemId,user,correct}] }
+};
+
+function getItemsForWeek(week) {
+  return SRS_BANK.filter(it => SRS_WEEK_TAGS[it.id] === week);
+}
+
+function pickWeeklyTestItems(week) {
+  const pool = getItemsForWeek(week).slice();
+  // shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
   }
-});
+  return pool.slice(0, Math.min(WT_QUESTIONS, pool.length));
+}
 
-// ========== VOCAB ==========
-let vocabFilter = "All";
+function isWeekTestUnlocked(week) {
+  if (week === 1) return true;
+  const prev = state.weeklyTests[week - 1];
+  return !!(prev && prev.passed);
+}
 
-function initVocab() {
+function startWeeklyTest(week) {
+  if (VISITOR_MODE) return;
+  if (!isWeekTestUnlocked(week)) return;
+  const items = pickWeeklyTestItems(week);
+  if (items.length === 0) return;
+  wtUi.active = { week, items, idx:0, score:0, answers:[] };
+  document.getElementById("wt-result-host").innerHTML = "";
+  renderWeeklyRunner();
+  document.getElementById("page-weekly").scrollTop = 0;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function renderWeeklyRunner() {
+  const host = document.getElementById("wt-runner-host");
+  if (!wtUi.active) { host.innerHTML = ""; return; }
+  const a = wtUi.active;
+  const item = a.items[a.idx];
+  host.innerHTML = `
+    <div class="wt-runner">
+      <div class="wt-runner-head">
+        <div class="wt-runner-title">Week ${a.week} test · ${WEEKS[a.week-1].name}</div>
+        <div class="wt-runner-progress">${a.idx+1} / ${a.items.length}</div>
+      </div>
+      <div class="quiz-progress"><div class="quiz-progress-fill" style="width:${(a.idx/a.items.length)*100}%"></div></div>
+      <div class="quiz-question">${labelForType(item.type)}</div>
+      <div class="quiz-prompt">${item.prompt}</div>
+      <div class="quiz-hint">💡 ${item.hint}</div>
+      <div class="quiz-input-row">
+        <input type="text" class="quiz-input" id="wt-input" placeholder="Type your answer…" autocomplete="off" />
+        <button class="quiz-submit" id="wt-submit">Submit</button>
+      </div>
+      <div class="quiz-feedback" id="wt-feedback"></div>
+      <div class="quiz-nav">
+        <div class="quiz-score">Score: <span>${a.score}</span> / ${a.items.length}</div>
+        <button class="quiz-next" id="wt-next" style="display:none">Next →</button>
+      </div>
+    </div>`;
+  const input = document.getElementById("wt-input");
+  document.getElementById("wt-submit").onclick = submitWeeklyAnswer;
+  document.getElementById("wt-next").onclick = advanceWeekly;
+  input.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    if (document.getElementById("wt-submit").disabled) advanceWeekly();
+    else submitWeeklyAnswer();
+  });
+  setTimeout(() => input.focus(), 30);
+}
+
+function submitWeeklyAnswer() {
+  const a = wtUi.active; if (!a) return;
+  const item = a.items[a.idx];
+  const input = document.getElementById("wt-input");
+  const fb = document.getElementById("wt-feedback");
+  const submit = document.getElementById("wt-submit");
+  const next = document.getElementById("wt-next");
+  const userInput = input.value;
+  const correct = gradeAnswer(userInput, item.answer, item.type);
+  if (correct) a.score++;
+  a.answers.push({ itemId:item.id, user:userInput, correct });
+  // Bump SRS as well — weekly test results feed the spaced-rep system
+  if (correct) srsBumpCorrect(item.id); else srsBumpWrong(item.id);
+  saveState();
+
+  input.disabled = true;
+  input.className = "quiz-input " + (correct ? "correct" : "wrong");
+  fb.className = "quiz-feedback " + (correct ? "correct" : "wrong");
+  fb.innerHTML = correct
+    ? `<strong>Correct ✓</strong> "${item.answer}"`
+    : `<strong>Not quite.</strong> Answer: <em>"${item.answer}"</em>`;
+  submit.disabled = true;
+  next.style.display = "block";
+  next.textContent = a.idx === a.items.length - 1 ? "Finish →" : "Next →";
+  document.querySelector("#wt-runner-host .quiz-score span").textContent = a.score;
+}
+
+function advanceWeekly() {
+  const a = wtUi.active; if (!a) return;
+  a.idx++;
+  if (a.idx >= a.items.length) finishWeeklyTest();
+  else renderWeeklyRunner();
+}
+
+function finishWeeklyTest() {
+  const a = wtUi.active; if (!a) return;
+  const passed = a.score >= WT_PASS_THRESHOLD;
+  const prev = state.weeklyTests[a.week] || { best:0, attempts:0, passed:false };
+  state.weeklyTests[a.week] = {
+    best: Math.max(prev.best, a.score),
+    attempts: prev.attempts + 1,
+    passed: prev.passed || passed,
+    lastTaken: todayKey()
+  };
+  saveState();
+
+  const host = document.getElementById("wt-result-host");
+  host.innerHTML = `
+    <div class="wt-result ${passed ? "passed" : ""}">
+      <div class="wt-result-score">${a.score}/${a.items.length}</div>
+      <div class="wt-result-score-sub">${Math.round((a.score/a.items.length)*100)}%</div>
+      <div class="wt-result-msg">${
+        passed
+          ? `Passed week ${a.week} · ${WEEKS[a.week-1].name} ✓`
+          : `Need ${WT_PASS_THRESHOLD}/${a.items.length} to pass. Try again when you're ready.`
+      }</div>
+      <div class="wt-actions" style="justify-content:center">
+        <button class="wt-btn" id="wt-retry">Retake</button>
+        <button class="wt-btn secondary" id="wt-close">Back to list</button>
+      </div>
+    </div>`;
+  const week = a.week;
+  document.getElementById("wt-runner-host").innerHTML = "";
+  wtUi.active = null;
+  if (passed) confettiBurst();
+  document.getElementById("wt-retry").onclick = () => startWeeklyTest(week);
+  document.getElementById("wt-close").onclick = () => {
+    document.getElementById("wt-result-host").innerHTML = "";
+  };
+  renderWeeklyTests();
+}
+
+function renderWeeklyTests() {
+  const list = document.getElementById("wt-list");
+  list.innerHTML = "";
+  WEEKS.forEach((wk, i) => {
+    const w = i + 1;
+    const r = state.weeklyTests[w];
+    const items = getItemsForWeek(w);
+    const unlocked = isWeekTestUnlocked(w);
+    const passed = !!(r && r.passed);
+    const attempted = !!(r && r.attempts > 0);
+
+    const card = document.createElement("div");
+    card.className = "wt-card"
+      + (passed ? " passed" : attempted ? " attempted" : "")
+      + (!unlocked ? " locked" : "");
+    const statusCls = passed ? "passed" : attempted ? "attempted" : unlocked ? "ready" : "locked";
+    const statusTxt = passed ? "✓ Passed" : attempted ? "Attempted" : unlocked ? "Ready" : "Locked";
+
+    card.innerHTML = `
+      <div class="wt-head">
+        <div class="wt-week">${w}</div>
+        <div class="wt-info">
+          <div class="wt-title">Week ${w} · ${wk.name}</div>
+          <div class="wt-desc">${wk.grammar} — ${items.length} items in pool, ${WT_QUESTIONS} per attempt, pass at ${WT_PASS_THRESHOLD}/${WT_QUESTIONS}.</div>
+        </div>
+        <span class="wt-status ${statusCls}">${statusTxt}</span>
+      </div>
+      ${r ? `<div class="wt-best">Best score: <strong>${r.best}/${WT_QUESTIONS}</strong> · attempts: <strong>${r.attempts}</strong></div>` : ""}
+      <div class="wt-actions write-only">
+        <button class="wt-btn" data-week="${w}" ${unlocked && items.length>0 ? "" : "disabled"}>
+          ${attempted ? "Retake" : "Start test"}
+        </button>
+        ${!unlocked ? '<span class="wt-best">Pass the previous week to unlock.</span>' : ""}
+      </div>`;
+    list.appendChild(card);
+  });
+  list.querySelectorAll("[data-week]").forEach(btn => {
+    btn.onclick = () => startWeeklyTest(parseInt(btn.dataset.week, 10));
+  });
+
+  // Field tests (real-world challenges)
+  const ft = document.getElementById("field-tests-list");
+  ft.innerHTML = "";
+  FIELD_TESTS.forEach((t, i) => {
+    const done = !!state.fieldTests[`ft${i}`];
+    const card = document.createElement("div");
+    card.className = "wt-card";
+    card.innerHTML = `
+      <div class="wt-head">
+        <div class="wt-week">${t.week}</div>
+        <div class="wt-info">
+          <div class="wt-title">${t.title}</div>
+          <div class="wt-desc">${t.desc}</div>
+        </div>
+        <button class="wt-btn ${done ? "secondary" : ""} write-only" data-ft="${i}">
+          ${done ? "✓ Done" : "Mark done"}
+        </button>
+      </div>`;
+    ft.appendChild(card);
+  });
+  ft.querySelectorAll("[data-ft]").forEach(btn => {
+    btn.onclick = () => toggleFieldTest(parseInt(btn.dataset.ft,10));
+  });
+}
+
+function toggleFieldTest(i) {
+  if (VISITOR_MODE) return;
+  const key = `ft${i}`;
+  state.fieldTests[key] = !state.fieldTests[key];
+  if (state.fieldTests[key]) confettiBurst();
+  saveState();
+  renderWeeklyTests();
+}
+
+// ============================================================
+// LEXICON & AUDIO
+// Web Speech API — picks the best Dutch/Flemish voice available.
+// Browsers vary; nl-BE rarely ships, so nl-NL is the typical fallback.
+// ============================================================
+const lexUi = {
+  initialized:false,
+  filter:"All",
+  search:"",
+  voice:null,
+  voices:[]
+};
+
+function pickDutchVoice() {
+  const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  lexUi.voices = voices;
+  if (!voices.length) return null;
+  // 1. Belgian Dutch
+  let v = voices.find(v => /^nl[-_]be$/i.test(v.lang));
+  if (v) return v;
+  // 2. Generic Dutch (Netherlands)
+  v = voices.find(v => /^nl/i.test(v.lang));
+  if (v) return v;
+  // 3. Anything labelled Dutch / Flemish in name
+  v = voices.find(v => /dutch|flemish|nederlands|vlaams/i.test(v.name));
+  return v || null;
+}
+
+function updateVoiceNote() {
+  const note = document.getElementById("voice-note");
+  if (!note) return;
+  if (!("speechSynthesis" in window)) {
+    note.textContent = "Audio not supported in this browser.";
+    return;
+  }
+  const v = lexUi.voice;
+  if (!v) {
+    note.innerHTML = "🔊 No Dutch voice detected on this device. Audio will use the system default — quality will vary.";
+    return;
+  }
+  const flag = /be$/i.test(v.lang) ? "🇧🇪 Belgian" : "🇳🇱 Dutch (Netherlands)";
+  note.innerHTML = `🔊 Audio voice: <strong>${v.name}</strong> · ${flag} (<code>${v.lang}</code>). Click the speaker on any card.`;
+}
+
+function speak(text, btn) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  if (lexUi.voice) u.voice = lexUi.voice;
+  u.lang = lexUi.voice ? lexUi.voice.lang : "nl-NL";
+  u.rate = 0.92;
+  u.pitch = 1;
+  if (btn) {
+    btn.classList.add("playing");
+    u.onend = u.onerror = () => btn.classList.remove("playing");
+  }
+  speechSynthesis.speak(u);
+}
+
+function initLexiconOnce() {
+  if (lexUi.initialized) return;
+  lexUi.initialized = true;
+
+  // Voice list loads asynchronously in some browsers
+  if ("speechSynthesis" in window) {
+    lexUi.voice = pickDutchVoice();
+    speechSynthesis.onvoiceschanged = () => {
+      lexUi.voice = pickDutchVoice();
+      updateVoiceNote();
+    };
+  }
+  updateVoiceNote();
+
+  // Filter pills
   const filterEl = document.getElementById("vocab-filter");
   filterEl.innerHTML = "";
   const cats = ["All", ...Object.keys(VOCAB_DATA)];
   cats.forEach(cat => {
     const btn = document.createElement("button");
-    btn.className = "filter-btn" + (cat === vocabFilter ? " active" : "");
+    btn.className = "filter-btn" + (cat === lexUi.filter ? " active" : "");
     btn.textContent = cat;
-    btn.onclick = () => {
-      vocabFilter = cat;
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      renderVocab();
-    };
+    btn.dataset.cat = cat;
+    btn.addEventListener("click", () => {
+      lexUi.filter = cat;
+      filterEl.querySelectorAll(".filter-btn").forEach(b =>
+        b.classList.toggle("active", b.dataset.cat === cat));
+      renderLexicon();
+    });
     filterEl.appendChild(btn);
   });
-  renderVocab();
+
+  // Search
+  const search = document.getElementById("vocab-search");
+  search.value = lexUi.search;
+  search.addEventListener("input", e => {
+    lexUi.search = e.target.value.toLowerCase();
+    renderLexicon();
+  });
 }
 
-function renderVocab() {
+function renderLexicon() {
+  initLexiconOnce();
   const grid = document.getElementById("vocab-grid");
   grid.innerHTML = "";
-  const data = vocabFilter === "All"
-    ? Object.values(VOCAB_DATA).flat()
-    : VOCAB_DATA[vocabFilter] || [];
+  const data = lexUi.filter === "All"
+    ? Object.entries(VOCAB_DATA).flatMap(([wk, arr]) => arr.map(v => ({...v, wk})))
+    : (VOCAB_DATA[lexUi.filter] || []).map(v => ({...v, wk:lexUi.filter}));
 
-  data.forEach(v => {
+  const filtered = lexUi.search
+    ? data.filter(v =>
+        v.fl.toLowerCase().includes(lexUi.search) ||
+        v.en.toLowerCase().includes(lexUi.search) ||
+        (v.note || "").toLowerCase().includes(lexUi.search))
+    : data;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="quiz-empty"><div class="big">No matches</div><div>Try another search term.</div></div>`;
+    return;
+  }
+
+  filtered.forEach(v => {
     const card = document.createElement("div");
     card.className = "vocab-card";
     card.innerHTML = `
+      <button class="vocab-audio-btn" title="Play audio" aria-label="Play audio for ${v.fl}">▶</button>
       <div class="vocab-flemish">${v.fl}</div>
       <div class="vocab-english">${v.en}</div>
-      ${v.note ? `<div class="vocab-note">${v.note}</div>` : ""}
-    `;
+      ${v.note ? `<div class="vocab-note">${v.note}</div>` : ""}`;
+    const btn = card.querySelector(".vocab-audio-btn");
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      speak(v.fl, btn);
+    });
     grid.appendChild(card);
   });
 }
 
-// ========== FIELD TESTS ==========
-function initFieldTests() {
-  const list = document.getElementById("field-tests-list");
-  list.innerHTML = "";
-  FIELD_TESTS.forEach((ft, i) => {
-    const done = !!state.fieldTests[`ft${i}`];
-    const card = document.createElement("div");
-    card.className = "field-test-card";
-    card.innerHTML = `
-      <div class="ft-week">${ft.week}</div>
-      <div class="ft-info">
-        <div class="ft-title">Week ${ft.week}: ${ft.title}</div>
-        <div class="ft-desc">${ft.desc}</div>
-      </div>
-      <button class="ft-done-btn${done ? " done" : ""}" onclick="toggleFT(${i}, this)">
-        ${done ? "✓ Done" : "Mark done"}
-      </button>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function toggleFT(i, btn) {
-  const key = `ft${i}`;
-  state.fieldTests[key] = !state.fieldTests[key];
-  btn.className = "ft-done-btn" + (state.fieldTests[key] ? " done" : "");
-  btn.textContent = state.fieldTests[key] ? "✓ Done" : "Mark done";
-  if (state.fieldTests[key]) confettiBurst();
-  saveState();
-}
-
-// ========== NAVIGATION ==========
+// ============================================================
+// TAB NAVIGATION — preserves per-tab state across switches
+// ============================================================
 function showPage(id) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
-  document.getElementById("page-" + id).classList.add("active");
-  const tabs = document.querySelectorAll(".nav-tab");
-  const order = ["dashboard","quiz","vocab","challenges"];
-  tabs[order.indexOf(id)].classList.add("active");
+  const page = document.getElementById("page-" + id);
+  if (page) page.classList.add("active");
+  const tabBtn = document.querySelector(`.nav-tab[data-page="${id}"]`);
+  if (tabBtn) tabBtn.classList.add("active");
 
-  if (id === "quiz") initQuiz();
-  if (id === "vocab") initVocab();
-  if (id === "challenges") initFieldTests();
+  if (id === "dashboard") renderDashboard();
+  if (id === "quiz") renderQuiz();
+  if (id === "weekly") renderWeeklyTests();
+  if (id === "lexicon") renderLexicon();
 }
 
-// ========== INIT ==========
-// Pre-populate Week 1 as complete (Val finished Day 7 on 16 May 2026)
-if (Object.keys(state.days).length === 0) {
-  for (let d = 0; d < 7; d++) { state.days["w0_d" + d] = true; }
-  saveState();
+function setupNav() {
+  document.querySelectorAll(".nav-tab").forEach(btn => {
+    btn.addEventListener("click", () => showPage(btn.dataset.page));
+  });
 }
-recalcStreak();
-renderDashboard();
+
+// ============================================================
+// BOOTSTRAP
+// ============================================================
+(function bootstrap() {
+  const shareData = parseShareParam();
+  if (shareData) activateVisitorMode(shareData);
+
+  // First-run seed: pre-fill week 1 as complete (Val finished day 7 on 16 May 2026)
+  if (!VISITOR_MODE && Object.keys(state.days).length === 0) {
+    for (let d = 0; d < 7; d++) state.days[`w0_d${d}`] = true;
+    saveState();
+  }
+
+  recalcStreak();
+  setupNav();
+  setupShareUI();
+  renderDashboard();
+
+  // Pre-warm voice list (some browsers populate after first call)
+  if ("speechSynthesis" in window) {
+    setTimeout(() => { speechSynthesis.getVoices(); }, 50);
+  }
+})();
 </script>
 </body>
 </html>
