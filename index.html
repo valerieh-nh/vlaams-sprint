@@ -514,6 +514,18 @@
 
 <div class="share-toast" id="share-toast"></div>
 
+<!-- Optional: pre-generated MP3 audio manifest. Loads silently if missing. -->
+<script>
+  // Best-effort load; does nothing if the file isn't there.
+  (function tryLoadManifest() {
+    var s = document.createElement("script");
+    s.src = "lexicon-audio/manifest.js";
+    s.async = false;
+    s.onerror = function() { /* missing manifest is fine — falls back to Web Speech */ };
+    document.head.appendChild(s);
+  })();
+</script>
+
 <script>
 // ============================================================
 // STATIC DATA
@@ -1740,6 +1752,15 @@ function updateVoiceNote() {
     note.textContent = "Audio not supported in this browser.";
     return;
   }
+
+  // If a pre-generated MP3 manifest is loaded, that's the active path
+  const manifest = window.VLAAMS_AUDIO_MANIFEST;
+  if (manifest) {
+    const count = Object.keys(manifest).length;
+    note.innerHTML = `🎙 Studio audio: <strong>${count} entries</strong> via Azure Neural TTS (Belgian Dutch). Web Speech is the fallback.`;
+    return;
+  }
+
   const candidates = getDutchCandidates(lexUi.voices);
   const v = lexUi.voice;
 
@@ -1784,8 +1805,84 @@ function updateVoiceNote() {
   });
 }
 
+// ----------------------------------------------------------------
+// Pre-generated MP3 helpers (Path A: Azure Neural TTS, ahead-of-time)
+// Mirrors the FNV-1a hash + slug from generate-audio.js so the same
+// text always resolves to the same filename.
+// ----------------------------------------------------------------
+function fnv1a(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+function slugifyAudio(s) {
+  return s.toLowerCase()
+    .replace(/['']/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 32);
+}
+function audioKey(text) { return `${slugifyAudio(text)}-${fnv1a(text)}`; }
+
+// In-memory cache so we don't re-probe missing files
+const audioStatusCache = new Map();  // text -> "ok" | "missing"
+
+function tryPlayPregenerated(text, btn) {
+  return new Promise(resolve => {
+    if (audioStatusCache.get(text) === "missing") return resolve(false);
+
+    // If we have a manifest, only attempt for entries it lists
+    const manifest = window.VLAAMS_AUDIO_MANIFEST;
+    let file;
+    if (manifest) {
+      file = manifest[text];
+      if (!file) { audioStatusCache.set(text, "missing"); return resolve(false); }
+    } else {
+      // No manifest — opportunistically try the deterministic filename
+      file = `${audioKey(text)}.mp3`;
+    }
+
+    const audio = new Audio(`lexicon-audio/${file}`);
+    audio.preload = "auto";
+    let settled = false;
+    if (btn) btn.classList.add("playing");
+
+    audio.addEventListener("playing", () => {
+      audioStatusCache.set(text, "ok");
+      if (settled) return;
+      settled = true;
+      resolve(true);
+    });
+    audio.addEventListener("ended", () => {
+      if (btn) btn.classList.remove("playing");
+    });
+    audio.addEventListener("error", () => {
+      audioStatusCache.set(text, "missing");
+      if (btn) btn.classList.remove("playing");
+      if (settled) return;
+      settled = true;
+      resolve(false);
+    });
+    audio.play().catch(() => {
+      audioStatusCache.set(text, "missing");
+      if (btn) btn.classList.remove("playing");
+      if (settled) return;
+      settled = true;
+      resolve(false);
+    });
+  });
+}
+
 async function speak(text, btn) {
   if (!("speechSynthesis" in window)) return;
+
+  // 1. Pre-generated MP3 path: highest quality, guaranteed Belgian voice
+  if (await tryPlayPregenerated(text, btn)) return;
+
+  // 2. Web Speech fallback
   // Re-resolve voice every time — cheap, and robust against late-loading lists
   let voice = lexUi.voice || pickDutchVoiceFrom(speechSynthesis.getVoices());
   if (!voice) voice = await refreshDutchVoice();
