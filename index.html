@@ -835,7 +835,8 @@ function defaultState() {
   return {
     days:{}, fieldTests:{}, streak:0, lastActive:null,
     srs:{}, weeklyTests:{},
-    quizSession:{ category:"All", lastFeedback:null, score:0, total:0 }
+    quizSession:{ category:"All", lastFeedback:null, score:0, total:0 },
+    preferredVoiceURI: null
   };
 }
 function loadState() {
@@ -1662,22 +1663,74 @@ const lexUi = {
   filter:"All",
   search:"",
   voice:null,
-  voices:[]
+  voices:[],
+  preferredVoiceURI: null  // user-picked, persisted
 };
 
-function pickDutchVoice() {
-  const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-  lexUi.voices = voices;
-  if (!voices.length) return null;
-  // 1. Belgian Dutch
-  let v = voices.find(v => /^nl[-_]be$/i.test(v.lang));
-  if (v) return v;
-  // 2. Generic Dutch (Netherlands)
-  v = voices.find(v => /^nl/i.test(v.lang));
-  if (v) return v;
-  // 3. Anything labelled Dutch / Flemish in name
-  v = voices.find(v => /dutch|flemish|nederlands|vlaams/i.test(v.name));
-  return v || null;
+function getDutchCandidates(voices) {
+  return (voices || []).filter(v =>
+    /^nl(\b|[-_])/i.test(v.lang) ||
+    /dutch|nederlands|flemish|vlaams/i.test(v.name)
+  );
+}
+
+function pickDutchVoiceFrom(voices) {
+  const candidates = getDutchCandidates(voices);
+  if (!candidates.length) return null;
+
+  // 0. Honor a user pick if it's still in the list
+  if (lexUi.preferredVoiceURI) {
+    const picked = candidates.find(v => v.voiceURI === lexUi.preferredVoiceURI);
+    if (picked) return picked;
+  }
+
+  // Score each candidate: local > Belgian > NL > other
+  const score = v => {
+    let s = 0;
+    if (v.localService) s += 100;          // critical: prefer local over Google network voice
+    if (/^nl[-_]be$/i.test(v.lang)) s += 30;
+    else if (/flemish|vlaams|belgi/i.test(v.name)) s += 25;
+    else if (/^nl[-_]nl$/i.test(v.lang)) s += 20;
+    else if (/^nl/i.test(v.lang)) s += 10;
+    if (v.default) s += 1;
+    return s;
+  };
+  candidates.sort((a,b) => score(b) - score(a));
+  return candidates[0];
+}
+
+// Voices load async in Chrome/Edge. Resolve once they're available.
+function loadVoicesAsync() {
+  return new Promise(resolve => {
+    if (!("speechSynthesis" in window)) return resolve([]);
+    const existing = speechSynthesis.getVoices();
+    if (existing && existing.length) return resolve(existing);
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve(speechSynthesis.getVoices() || []);
+    };
+    speechSynthesis.addEventListener("voiceschanged", finish, { once: true });
+    // Some browsers never fire the event — poll briefly
+    let tries = 0;
+    const poll = setInterval(() => {
+      const list = speechSynthesis.getVoices();
+      if ((list && list.length) || ++tries > 20) {
+        clearInterval(poll);
+        finish();
+      }
+    }, 100);
+  });
+}
+
+function refreshDutchVoice() {
+  return loadVoicesAsync().then(voices => {
+    lexUi.voices = voices;
+    lexUi.voice = pickDutchVoiceFrom(voices);
+    updateVoiceNote();
+    return lexUi.voice;
+  });
 }
 
 function updateVoiceNote() {
@@ -1687,28 +1740,113 @@ function updateVoiceNote() {
     note.textContent = "Audio not supported in this browser.";
     return;
   }
+  const candidates = getDutchCandidates(lexUi.voices);
   const v = lexUi.voice;
-  if (!v) {
-    note.innerHTML = "🔊 No Dutch voice detected on this device. Audio will use the system default — quality will vary.";
+
+  if (!candidates.length) {
+    note.innerHTML = "⚠️ No Dutch voice installed on this device. Audio is disabled to avoid playing English. "
+      + "Install a Dutch language pack: <strong>macOS</strong> System Settings → Accessibility → Spoken Content → System Voice → Manage Voices → Dutch (Netherlands or Belgium). "
+      + "<strong>Windows</strong> Settings → Time &amp; Language → Speech → Add voices → Dutch.";
     return;
   }
-  const flag = /be$/i.test(v.lang) ? "🇧🇪 Belgian" : "🇳🇱 Dutch (Netherlands)";
-  note.innerHTML = `🔊 Audio voice: <strong>${v.name}</strong> · ${flag} (<code>${v.lang}</code>). Click the speaker on any card.`;
+
+  const flag = v && /be$/i.test(v.lang) ? "🇧🇪 Belgian"
+            : v ? "🇳🇱 Dutch (Netherlands)" : "—";
+  const isNetwork = v && !v.localService;
+
+  const options = candidates.map(c => {
+    const tag = c.localService ? "local" : "network";
+    const beFlag = /be$/i.test(c.lang) || /flemish|vlaams|belgi/i.test(c.name) ? "🇧🇪 " : "🇳🇱 ";
+    const sel = v && c.voiceURI === v.voiceURI ? " selected" : "";
+    return `<option value="${c.voiceURI}"${sel}>${beFlag}${c.name} (${c.lang}, ${tag})</option>`;
+  }).join("");
+
+  note.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span>🔊 Voice:</span>
+      <select id="voice-picker" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:var(--font);font-size:12px">
+        ${options}
+      </select>
+      <button id="voice-test" class="wt-btn secondary" style="padding:4px 10px;font-size:11px">▶ Test</button>
+      ${v ? `<span style="opacity:0.7">${flag}${isNetwork ? " · ⚠ network voice (may fail on file://)" : ""}</span>` : ""}
+    </div>`;
+
+  const picker = document.getElementById("voice-picker");
+  picker.addEventListener("change", () => {
+    lexUi.preferredVoiceURI = picker.value;
+    state.preferredVoiceURI = picker.value;
+    saveState();
+    lexUi.voice = lexUi.voices.find(x => x.voiceURI === picker.value) || null;
+    updateVoiceNote();
+  });
+  document.getElementById("voice-test").addEventListener("click", e => {
+    speak("Goeiedag, ik ben een Vlaamse stem.", e.currentTarget);
+  });
 }
 
-function speak(text, btn) {
+async function speak(text, btn) {
   if (!("speechSynthesis" in window)) return;
+  // Re-resolve voice every time — cheap, and robust against late-loading lists
+  let voice = lexUi.voice || pickDutchVoiceFrom(speechSynthesis.getVoices());
+  if (!voice) voice = await refreshDutchVoice();
+
+  // Validate it really is a Dutch voice (not silently swapped to system default)
+  const isDutch = voice && (/^nl(\b|[-_])/i.test(voice.lang) || /dutch|nederlands|flemish|vlaams/i.test(voice.name));
+  if (!isDutch) {
+    flashVoiceWarning("No Dutch voice available — audio disabled to avoid playing English.");
+    return;
+  }
+
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  if (lexUi.voice) u.voice = lexUi.voice;
-  u.lang = lexUi.voice ? lexUi.voice.lang : "nl-NL";
+  u.voice = voice;
+  u.lang = voice.lang || "nl-NL";
   u.rate = 0.92;
   u.pitch = 1;
-  if (btn) {
-    btn.classList.add("playing");
-    u.onend = u.onerror = () => btn.classList.remove("playing");
-  }
+
+  let started = false;
+  u.onstart = () => { started = true; };
+  u.onend = () => { if (btn) btn.classList.remove("playing"); };
+  u.onerror = (e) => {
+    if (btn) btn.classList.remove("playing");
+    // Chrome's network voices ("Google …") often error on file:// or offline
+    if (!voice.localService) {
+      flashVoiceWarning("Network voice failed (common on file://). Pick a 'local' voice from the dropdown.");
+    }
+  };
+  if (btn) btn.classList.add("playing");
   speechSynthesis.speak(u);
+
+  // Safety net: if Chrome silently fails to start a network voice, downgrade to a local one
+  setTimeout(() => {
+    if (!started && !voice.localService) {
+      speechSynthesis.cancel();
+      const local = (lexUi.voices || []).find(x => x.localService && /^nl/i.test(x.lang));
+      if (local && local.voiceURI !== voice.voiceURI) {
+        flashVoiceWarning(`Network voice didn't start. Switching to ${local.name}.`);
+        lexUi.voice = local;
+        lexUi.preferredVoiceURI = local.voiceURI;
+        state.preferredVoiceURI = local.voiceURI;
+        saveState();
+        updateVoiceNote();
+        speak(text, btn);
+      } else if (btn) {
+        btn.classList.remove("playing");
+      }
+    }
+  }, 1500);
+}
+
+function flashVoiceWarning(msg) {
+  const note = document.getElementById("voice-note");
+  if (!note) { console.warn(msg); return; }
+  const old = note.innerHTML;
+  note.innerHTML = `⚠️ ${msg}`;
+  note.style.background = "rgba(231,76,60,0.15)";
+  setTimeout(() => {
+    note.style.background = "";
+    updateVoiceNote();
+  }, 2200);
 }
 
 function initLexiconOnce() {
@@ -1717,11 +1855,9 @@ function initLexiconOnce() {
 
   // Voice list loads asynchronously in some browsers
   if ("speechSynthesis" in window) {
-    lexUi.voice = pickDutchVoice();
-    speechSynthesis.onvoiceschanged = () => {
-      lexUi.voice = pickDutchVoice();
-      updateVoiceNote();
-    };
+    refreshDutchVoice();
+    // Re-resolve if voices appear later (Chrome fires this; Safari sometimes does too)
+    speechSynthesis.addEventListener("voiceschanged", refreshDutchVoice);
   }
   updateVoiceNote();
 
@@ -1832,7 +1968,8 @@ function setupNav() {
 
   // Pre-warm voice list (some browsers populate after first call)
   if ("speechSynthesis" in window) {
-    setTimeout(() => { speechSynthesis.getVoices(); }, 50);
+    if (state.preferredVoiceURI) lexUi.preferredVoiceURI = state.preferredVoiceURI;
+    refreshDutchVoice();
   }
 })();
 </script>
