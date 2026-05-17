@@ -237,6 +237,29 @@
   .quiz-feedback.wrong { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); color: var(--red); display: block; }
   .quiz-feedback strong { font-weight: 700; }
   .quiz-feedback .next-due { display: block; font-size: 12px; opacity: 0.85; margin-top: 4px; font-style: italic; }
+  .audio-inline-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; vertical-align: middle;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    color: inherit; font-size: 11px; cursor: pointer; margin: 0 4px;
+    transition: all 0.15s; line-height: 1;
+  }
+  .audio-inline-btn:hover { background: var(--orange); color: white; border-color: var(--orange); }
+  .audio-inline-btn.playing { background: var(--orange); color: white; border-color: var(--orange); animation: pulse 1s ease-in-out infinite; }
+  .wt-review { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px; text-align: left; }
+  .wt-review-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+  .wt-review-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+    background: var(--surface2); border-left: 3px solid var(--border);
+  }
+  .wt-review-row.correct { border-left-color: var(--green); }
+  .wt-review-row.wrong { border-left-color: var(--red); }
+  .wt-review-mark { font-family: var(--font-cond); font-weight: 900; font-size: 16px; min-width: 16px; }
+  .wt-review-row.correct .wt-review-mark { color: var(--green); }
+  .wt-review-row.wrong .wt-review-mark { color: var(--red); }
+  .wt-review-text { flex: 1; font-size: 13px; line-height: 1.4; }
+  .wt-review-text em { color: var(--text-muted); font-style: italic; }
   .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
   .quiz-score { font-family: var(--font-cond); font-weight: 700; font-size: 18px; }
   .quiz-score span { color: var(--orange); }
@@ -1383,6 +1406,7 @@ function applyFeedbackToDom() {
   input.disabled = true;
   fb.className = "quiz-feedback " + (last.isCorrect ? "correct" : "wrong");
   fb.innerHTML = last.html;
+  wireAudioButtons(fb);
   submit.disabled = true;
   next.style.display = "block";
   quizUi.answered = true;
@@ -1415,10 +1439,13 @@ function checkAnswer() {
   if (isCorrect) state.quizSession.score++;
 
   const nextDueLine = describeNextDue(rec);
+  // Audio button only when the "answer" is Flemish text, not English glosses
+  const speakable = item.type !== "vocab";
+  const audioBtn = speakable ? " " + audioButtonHTML(item.answer, "Hear the Flemish") : "";
   const html = isCorrect
-    ? `<strong>Goed gedaan! ✓</strong> "${item.answer}"
+    ? `<strong>Goed gedaan! ✓</strong> "${item.answer}"${audioBtn}
        <span class="next-due">Box ${rec.box}/5 · ${nextDueLine}</span>`
-    : `<strong>Not quite.</strong> Answer: <em>"${item.answer}"</em>
+    : `<strong>Not quite.</strong> Answer: <em>"${item.answer}"</em>${audioBtn}
        <span class="next-due">Reset to box 1 · ${nextDueLine}</span>`;
 
   state.quizSession.lastFeedback = {
@@ -1537,9 +1564,12 @@ function submitWeeklyAnswer() {
   input.disabled = true;
   input.className = "quiz-input " + (correct ? "correct" : "wrong");
   fb.className = "quiz-feedback " + (correct ? "correct" : "wrong");
+  const speakable = item.type !== "vocab";
+  const audioBtn = speakable ? " " + audioButtonHTML(item.answer, "Hear the Flemish") : "";
   fb.innerHTML = correct
-    ? `<strong>Correct ✓</strong> "${item.answer}"`
-    : `<strong>Not quite.</strong> Answer: <em>"${item.answer}"</em>`;
+    ? `<strong>Correct ✓</strong> "${item.answer}"${audioBtn}`
+    : `<strong>Not quite.</strong> Answer: <em>"${item.answer}"</em>${audioBtn}`;
+  wireAudioButtons(fb);
   submit.disabled = true;
   next.style.display = "block";
   next.textContent = a.idx === a.items.length - 1 ? "Finish →" : "Next →";
@@ -1566,6 +1596,23 @@ function finishWeeklyTest() {
   saveState();
 
   const host = document.getElementById("wt-result-host");
+  // Build per-question review list with speaker buttons for Flemish answers
+  const reviewRows = a.answers.map((ans, i) => {
+    const it = a.items[i];
+    const speakable = it.type !== "vocab";
+    const audioBtn = speakable ? audioButtonHTML(it.answer, "Hear the Flemish") : "";
+    const cls = ans.correct ? "correct" : "wrong";
+    const mark = ans.correct ? "✓" : "✗";
+    const promptShort = it.prompt.length > 60 ? it.prompt.slice(0, 57) + "…" : it.prompt;
+    return `<div class="wt-review-row ${cls}">
+      <div class="wt-review-mark">${mark}</div>
+      <div class="wt-review-text">
+        <div style="opacity:0.7;font-size:11px;margin-bottom:2px">${promptShort}</div>
+        <div>${it.answer} ${audioBtn}</div>
+      </div>
+    </div>`;
+  }).join("");
+
   host.innerHTML = `
     <div class="wt-result ${passed ? "passed" : ""}">
       <div class="wt-result-score">${a.score}/${a.items.length}</div>
@@ -1579,7 +1626,12 @@ function finishWeeklyTest() {
         <button class="wt-btn" id="wt-retry">Retake</button>
         <button class="wt-btn secondary" id="wt-close">Back to list</button>
       </div>
+      <div class="wt-review">
+        <div class="wt-review-title">Review · tap ▶ to hear it</div>
+        ${reviewRows}
+      </div>
     </div>`;
+  wireAudioButtons(host);
   const week = a.week;
   document.getElementById("wt-runner-host").innerHTML = "";
   wtUi.active = null;
@@ -1826,6 +1878,27 @@ function slugifyAudio(s) {
     .slice(0, 32);
 }
 function audioKey(text) { return `${slugifyAudio(text)}-${fnv1a(text)}`; }
+
+// Inline ▶ button HTML — used in quiz feedback and result screens.
+// Uses data-flemish so we can hook all of them up after innerHTML replaces.
+function audioButtonHTML(text, title) {
+  const safe = String(text).replace(/"/g, "&quot;");
+  return `<button class="audio-inline-btn" data-flemish="${safe}" title="${title || "Play audio"}" aria-label="Play audio">▶</button>`;
+}
+
+// Wire any data-flemish buttons inside a container to the speak() function.
+function wireAudioButtons(root) {
+  if (!root) return;
+  root.querySelectorAll(".audio-inline-btn[data-flemish]").forEach(btn => {
+    if (btn.dataset.audioWired) return;
+    btn.dataset.audioWired = "1";
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      e.preventDefault();
+      speak(btn.dataset.flemish, btn);
+    });
+  });
+}
 
 // In-memory cache so we don't re-probe missing files
 const audioStatusCache = new Map();  // text -> "ok" | "missing"
