@@ -315,6 +315,66 @@
     border-left: 3px solid var(--orange); border-radius: 4px;
   }
 
+  /* TRANSLATOR PANEL */
+  .tx-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 18px;
+  }
+  .tx-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .tx-title { font-family: var(--font-cond); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .tx-direction {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 3px 10px; font-size: 11px;
+    color: var(--text-muted); font-weight: 600; letter-spacing: 0.4px;
+  }
+  .tx-direction strong { color: var(--orange); }
+  .tx-input-row { display: flex; gap: 8px; align-items: stretch; margin-bottom: 10px; }
+  .tx-input {
+    flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none; resize: none; min-height: 42px;
+  }
+  .tx-input:focus { border-color: var(--orange); }
+  .tx-actions { display: flex; flex-direction: column; gap: 6px; }
+  .tx-btn {
+    background: var(--orange); border: none; border-radius: 8px;
+    padding: 8px 14px; color: white; font-family: var(--font);
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; cursor: pointer; transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .tx-btn:hover { background: var(--orange-dark); }
+  .tx-btn.secondary {
+    background: var(--surface2); border: 1.5px solid var(--border);
+    color: var(--text-muted);
+  }
+  .tx-btn.secondary:hover { border-color: var(--orange); color: var(--orange); background: var(--surface2); }
+  .tx-btn:disabled { opacity: 0.5; cursor: default; }
+  .tx-result {
+    background: var(--surface2); border-left: 3px solid var(--orange);
+    border-radius: 6px; padding: 10px 14px; margin-bottom: 10px;
+    font-size: 14px; line-height: 1.5; display: none;
+  }
+  .tx-result.show { display: block; }
+  .tx-result.error { border-left-color: var(--red); color: var(--red); }
+  .tx-result-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.6px; margin-bottom: 4px; }
+  .tx-recent { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .tx-recent-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.6px; margin-right: 4px; }
+  .tx-chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 4px 10px; font-size: 11px;
+    color: var(--text); cursor: pointer; transition: all 0.15s;
+    font-family: var(--font); max-width: 220px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tx-chip:hover { border-color: var(--orange); color: var(--orange); }
+  .tx-chip-clear {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 11px; cursor: pointer; padding: 4px 6px;
+  }
+  .tx-chip-clear:hover { color: var(--red); }
+
   /* WEEKLY TESTS */
   .wt-card {
     background: var(--surface); border: 1px solid var(--border);
@@ -530,6 +590,26 @@
 <!-- LEXICON -->
 <div class="page" id="page-lexicon">
   <div class="voice-note" id="voice-note">Loading voices…</div>
+
+  <div class="tx-panel">
+    <div class="tx-head">
+      <div class="tx-title">Translate &amp; speak</div>
+      <div class="tx-direction" id="tx-direction" title="Auto-detected from input">
+        Auto: <strong id="tx-dir-from">NL</strong> → <strong id="tx-dir-to">EN</strong>
+      </div>
+    </div>
+    <div class="tx-input-row">
+      <textarea class="tx-input" id="tx-input" rows="2"
+        placeholder="Type Dutch / Flemish / English here…"></textarea>
+      <div class="tx-actions">
+        <button class="tx-btn" id="tx-translate">Translate</button>
+        <button class="tx-btn secondary" id="tx-speak-input">▶ Speak</button>
+      </div>
+    </div>
+    <div class="tx-result" id="tx-result"></div>
+    <div class="tx-recent" id="tx-recent"></div>
+  </div>
+
   <input type="text" class="vocab-search" id="vocab-search" placeholder="Search Flemish or English…" />
   <div class="vocab-filter" id="vocab-filter"></div>
   <div class="vocab-grid" id="vocab-grid"></div>
@@ -871,7 +951,8 @@ function defaultState() {
     days:{}, fieldTests:{}, streak:0, lastActive:null,
     srs:{}, weeklyTests:{},
     quizSession:{ category:"All", lastFeedback:null, score:0, total:0 },
-    preferredVoiceURI: null
+    preferredVoiceURI: null,
+    recentLookups: []  // [{text, lang, translation, dir, t}], newest first, max 10
   };
 }
 function loadState() {
@@ -2056,6 +2137,237 @@ function initLexiconOnce() {
     lexUi.search = e.target.value.toLowerCase();
     renderLexicon();
   });
+
+  // Translator
+  initTranslator();
+}
+
+// ============================================================
+// TRANSLATOR (MyMemory free API; no key required)
+// Auto-detects direction from input, supports speaking either side.
+// ============================================================
+const TX_API = "https://api.mymemory.translated.net/get";
+let txState = {
+  initialized: false,
+  busy: false,
+  lastResult: null  // { srcLang, dstLang, srcText, dstText }
+};
+
+// Detect language using a Dutch-affinity heuristic on common words and
+// orthography. We bias slightly toward Dutch so "ik" / "in" don't flip
+// the intended direction. For longer text the signal dominates the bias.
+const NL_HINTS = new Set([
+  "ik","je","jij","u","wij","we","jullie","zij","ze","hij","het","de","een",
+  "is","zijn","ben","bent","heb","hebt","heeft","hebben","was","waren",
+  "niet","wel","ook","maar","want","omdat","met","zonder","voor","naar",
+  "van","aan","op","in","bij","uit","over","onder","tussen","tot",
+  "graag","alstublieft","alsjeblieft","dank","dankjewel","bedankt",
+  "ja","nee","misschien","goed","slecht","mooi","lelijk",
+  "vandaag","gisteren","morgen","seffens","straks","nu",
+  "amai","plezant","tof","goesting","awel","allez","zeg","toch","gewoon",
+  "pintje","frietje","biertje","mag","kun","kan","zou","wil","wilt"
+]);
+const EN_HINTS = new Set([
+  "i","you","he","she","it","we","they","the","a","an",
+  "is","are","am","was","were","be","been","being","have","has","had",
+  "not","but","or","and","because","with","without","for","to",
+  "from","at","on","in","by","over","under","between","until",
+  "please","thanks","thank","yes","no","maybe","good","bad",
+  "today","yesterday","tomorrow","now","later","beer","fries"
+]);
+const NL_BIGRAMS = ["ij","oe","aa","ee","sch","cht","tje","kje","gen","den"];
+
+function detectLanguage(raw) {
+  const text = (raw || "").toLowerCase().trim();
+  if (!text) return "nl";
+  // Strip punctuation, split on whitespace
+  const tokens = text.replace(/[^a-zàâäçéèêëîïôûüùÿñæœ\s'-]/gi, " ")
+                     .split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return "nl";
+  let nl = 0, en = 0;
+  tokens.forEach(t => {
+    if (NL_HINTS.has(t)) nl += 2;
+    if (EN_HINTS.has(t)) en += 2;
+  });
+  // Bigram orthographic boost (Dutch loves -ij, -oe, sch-, -cht, -tje)
+  NL_BIGRAMS.forEach(bg => { if (text.includes(bg)) nl += 1; });
+  // Tiny Dutch bias to break ties on very short inputs
+  nl += 0.5;
+  return nl >= en ? "nl" : "en";
+}
+
+function updateDirectionUI(text) {
+  const src = detectLanguage(text);
+  const dst = src === "nl" ? "en" : "nl";
+  document.getElementById("tx-dir-from").textContent = src.toUpperCase();
+  document.getElementById("tx-dir-to").textContent = dst.toUpperCase();
+  return { src, dst };
+}
+
+async function translateMyMemory(text, src, dst) {
+  const url = `${TX_API}?q=${encodeURIComponent(text)}&langpair=${src}|${dst}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Translation API ${res.status}`);
+  const data = await res.json();
+  if (data.responseStatus !== 200 && data.responseStatus !== "200") {
+    throw new Error(data.responseDetails || "Translation failed");
+  }
+  return (data.responseData && data.responseData.translatedText) || "";
+}
+
+function showTxResult(html, isError) {
+  const el = document.getElementById("tx-result");
+  el.className = "tx-result show" + (isError ? " error" : "");
+  el.innerHTML = html;
+  wireAudioButtons(el);
+}
+
+function pushRecentLookup(entry) {
+  if (VISITOR_MODE) return;
+  const list = state.recentLookups || [];
+  // Dedupe by source text (case-insensitive)
+  const key = entry.srcText.toLowerCase().trim();
+  const pruned = list.filter(x => x.srcText.toLowerCase().trim() !== key);
+  pruned.unshift(entry);
+  state.recentLookups = pruned.slice(0, 10);
+  saveState();
+  renderRecentLookups();
+}
+
+function renderRecentLookups() {
+  const host = document.getElementById("tx-recent");
+  if (!host) return;
+  const list = state.recentLookups || [];
+  host.innerHTML = "";
+  if (list.length === 0) return;
+
+  const label = document.createElement("span");
+  label.className = "tx-recent-label";
+  label.textContent = "Recent:";
+  host.appendChild(label);
+
+  list.forEach(entry => {
+    const chip = document.createElement("button");
+    chip.className = "tx-chip";
+    chip.title = `${entry.srcText} → ${entry.dstText}`;
+    chip.textContent = entry.srcText.length > 30
+      ? entry.srcText.slice(0, 27) + "…"
+      : entry.srcText;
+    chip.addEventListener("click", () => {
+      document.getElementById("tx-input").value = entry.srcText;
+      updateDirectionUI(entry.srcText);
+      // Re-show the cached translation immediately
+      txState.lastResult = entry;
+      showTxResult(buildResultHTML(entry), false);
+    });
+    host.appendChild(chip);
+  });
+
+  const clear = document.createElement("button");
+  clear.className = "tx-chip-clear";
+  clear.textContent = "× clear";
+  clear.title = "Clear recent lookups";
+  clear.addEventListener("click", () => {
+    state.recentLookups = [];
+    saveState();
+    renderRecentLookups();
+  });
+  host.appendChild(clear);
+}
+
+function buildResultHTML(entry) {
+  const isNlSrc = entry.srcLang === "nl";
+  const srcAudio = isNlSrc
+    ? " " + audioButtonHTML(entry.srcText, "Hear original")
+    : "";
+  const dstAudio = !isNlSrc
+    ? " " + audioButtonHTML(entry.dstText, "Hear Dutch translation")
+    : "";
+  const srcLabel = isNlSrc ? "🇧🇪 NL" : "🇬🇧 EN";
+  const dstLabel = isNlSrc ? "🇬🇧 EN" : "🇧🇪 NL";
+  return `
+    <div class="tx-result-label">${srcLabel} (input)${srcAudio}</div>
+    <div style="margin-bottom:8px">${escapeHTML(entry.srcText)}</div>
+    <div class="tx-result-label">${dstLabel} (translation)${dstAudio}</div>
+    <div>${escapeHTML(entry.dstText)}</div>`;
+}
+
+function escapeHTML(s) {
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+async function runTranslate() {
+  if (txState.busy) return;
+  const input = document.getElementById("tx-input");
+  const btn = document.getElementById("tx-translate");
+  const text = (input.value || "").trim();
+  if (!text) return;
+
+  txState.busy = true;
+  btn.disabled = true;
+  btn.textContent = "Translating…";
+  showTxResult('<div style="opacity:0.7">Looking up…</div>', false);
+
+  try {
+    const { src, dst } = updateDirectionUI(text);
+    const translated = await translateMyMemory(text, src, dst);
+    if (!translated) throw new Error("Empty translation");
+    const entry = {
+      srcLang: src, dstLang: dst,
+      srcText: text, dstText: translated,
+      t: Date.now()
+    };
+    txState.lastResult = entry;
+    showTxResult(buildResultHTML(entry), false);
+    pushRecentLookup(entry);
+  } catch (err) {
+    showTxResult(
+      `Translation failed: ${escapeHTML(err.message || "network error")}. ` +
+      `MyMemory's free tier is rate-limited (~5k chars/day per IP).`,
+      true
+    );
+  } finally {
+    txState.busy = false;
+    btn.disabled = false;
+    btn.textContent = "Translate";
+  }
+}
+
+function speakInput() {
+  const text = (document.getElementById("tx-input").value || "").trim();
+  if (!text) return;
+  const lang = detectLanguage(text);
+  if (lang !== "nl") {
+    // Don't try to read English with the Dutch voice — flash a hint instead
+    flashVoiceWarning("That looks like English. Use Translate first, then ▶ on the Dutch result.");
+    return;
+  }
+  speak(text, document.getElementById("tx-speak-input"));
+}
+
+function initTranslator() {
+  if (txState.initialized) return;
+  txState.initialized = true;
+
+  const input = document.getElementById("tx-input");
+  const txBtn = document.getElementById("tx-translate");
+  const spkBtn = document.getElementById("tx-speak-input");
+
+  input.addEventListener("input", e => updateDirectionUI(e.target.value));
+  input.addEventListener("keydown", e => {
+    // Cmd/Ctrl+Enter triggers translate; plain Enter inserts newline
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      runTranslate();
+    }
+  });
+  txBtn.addEventListener("click", runTranslate);
+  spkBtn.addEventListener("click", speakInput);
+
+  updateDirectionUI("");
+  renderRecentLookups();
 }
 
 function renderLexicon() {
