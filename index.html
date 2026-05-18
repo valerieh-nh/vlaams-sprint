@@ -1809,7 +1809,8 @@ const lexUi = {
   search:"",
   voice:null,
   voices:[],
-  preferredVoiceURI: null  // user-picked, persisted
+  preferredVoiceURI: null,  // user-picked, persisted
+  showAllVoices: false      // mobile escape hatch when no Dutch voice matches
 };
 
 function getDutchCandidates(voices) {
@@ -1894,47 +1895,85 @@ function updateVoiceNote() {
     return;
   }
 
-  const candidates = getDutchCandidates(lexUi.voices);
+  const allVoices = lexUi.voices || [];
+  const dutchCandidates = getDutchCandidates(allVoices);
   const v = lexUi.voice;
+  const showAll = lexUi.showAllVoices || dutchCandidates.length === 0;
+  const candidates = showAll ? allVoices : dutchCandidates;
 
-  if (!candidates.length) {
-    note.innerHTML = "⚠️ No Dutch voice installed on this device. Audio is disabled to avoid playing English. "
-      + "Install a Dutch language pack: <strong>macOS</strong> System Settings → Accessibility → Spoken Content → System Voice → Manage Voices → Dutch (Netherlands or Belgium). "
-      + "<strong>Windows</strong> Settings → Time &amp; Language → Speech → Add voices → Dutch.";
+  if (allVoices.length === 0) {
+    note.innerHTML = "🔊 Loading voices… (some browsers populate this asynchronously)";
     return;
   }
 
-  const flag = v && /be$/i.test(v.lang) ? "🇧🇪 Belgian"
-            : v ? "🇳🇱 Dutch (Netherlands)" : "—";
-  const isNetwork = v && !v.localService;
+  // Build option list — sort to surface Dutch ones first when showing all
+  const sorted = candidates.slice().sort((a, b) => {
+    const aIsDutch = /^nl/i.test(a.lang) || /dutch|nederlands|flemish|vlaams/i.test(a.name);
+    const bIsDutch = /^nl/i.test(b.lang) || /dutch|nederlands|flemish|vlaams/i.test(b.name);
+    if (aIsDutch !== bIsDutch) return aIsDutch ? -1 : 1;
+    return (a.name || "").localeCompare(b.name || "");
+  });
 
-  const options = candidates.map(c => {
+  const options = sorted.map(c => {
     const tag = c.localService ? "local" : "network";
-    const beFlag = /be$/i.test(c.lang) || /flemish|vlaams|belgi/i.test(c.name) ? "🇧🇪 " : "🇳🇱 ";
+    const isDutch = /^nl/i.test(c.lang) || /dutch|nederlands|flemish|vlaams/i.test(c.name);
+    const beFlag = /be$/i.test(c.lang) || /flemish|vlaams|belgi/i.test(c.name) ? "🇧🇪 "
+                : isDutch ? "🇳🇱 " : "🌐 ";
     const sel = v && c.voiceURI === v.voiceURI ? " selected" : "";
     return `<option value="${c.voiceURI}"${sel}>${beFlag}${c.name} (${c.lang}, ${tag})</option>`;
   }).join("");
 
+  const flag = v && /be$/i.test(v.lang) ? "🇧🇪 Belgian"
+            : v && /^nl/i.test(v.lang) ? "🇳🇱 Dutch (NL)"
+            : v ? "🌐 Non-Dutch"
+            : "—";
+  const isNetwork = v && !v.localService;
+  const dutchCount = dutchCandidates.length;
+
+  // Header: status + counts
+  let statusLine;
+  if (dutchCount === 0) {
+    statusLine = `<span style="color:var(--yellow)">⚠ No Dutch voice detected (${allVoices.length} voices total). Pick any voice to use as fallback, or install a Dutch language pack.</span>`;
+  } else {
+    statusLine = `<span style="opacity:0.7">${dutchCount} Dutch voice${dutchCount > 1 ? "s" : ""} · ${allVoices.length} total</span>`;
+  }
+
+  const toggleLabel = showAll ? "Show Dutch only" : "Show all voices";
+  const toggleHint = dutchCount === 0 ? "" :
+    `<button id="voice-toggle-all" class="wt-btn secondary" style="padding:4px 10px;font-size:11px">${toggleLabel}</button>`;
+
   note.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <span>🔊 Voice:</span>
-      <select id="voice-picker" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:var(--font);font-size:12px">
-        ${options}
-      </select>
-      <button id="voice-test" class="wt-btn secondary" style="padding:4px 10px;font-size:11px">▶ Test</button>
-      ${v ? `<span style="opacity:0.7">${flag}${isNetwork ? " · ⚠ network voice (may fail on file://)" : ""}</span>` : ""}
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span>🔊 Voice:</span>
+        <select id="voice-picker" style="background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-family:var(--font);font-size:12px;max-width:100%;flex:1;min-width:180px">
+          ${options || '<option disabled>No voices available</option>'}
+        </select>
+        <button id="voice-test" class="wt-btn" style="padding:4px 10px;font-size:11px">▶ Test</button>
+        ${toggleHint}
+      </div>
+      <div style="font-size:11px">
+        ${v ? `Active: <strong>${v.name}</strong> · ${flag}${isNetwork ? " · network" : " · local"}` : ""}
+        ${statusLine ? " · " + statusLine : ""}
+      </div>
     </div>`;
 
   const picker = document.getElementById("voice-picker");
-  picker.addEventListener("change", () => {
+  if (picker) picker.addEventListener("change", () => {
     lexUi.preferredVoiceURI = picker.value;
     state.preferredVoiceURI = picker.value;
     saveState();
     lexUi.voice = lexUi.voices.find(x => x.voiceURI === picker.value) || null;
     updateVoiceNote();
   });
-  document.getElementById("voice-test").addEventListener("click", e => {
+  const testBtn = document.getElementById("voice-test");
+  if (testBtn) testBtn.addEventListener("click", e => {
     speak("Goeiedag, ik ben een Vlaamse stem.", e.currentTarget);
+  });
+  const toggleBtn = document.getElementById("voice-toggle-all");
+  if (toggleBtn) toggleBtn.addEventListener("click", () => {
+    lexUi.showAllVoices = !lexUi.showAllVoices;
+    updateVoiceNote();
   });
 }
 
@@ -2037,13 +2076,24 @@ async function speak(text, btn) {
   if (await tryPlayPregenerated(text, btn)) return;
 
   // 2. Web Speech fallback
-  // Re-resolve voice every time — cheap, and robust against late-loading lists
-  let voice = lexUi.voice || pickDutchVoiceFrom(speechSynthesis.getVoices());
+  // If the user explicitly picked a voice (mobile escape hatch), honor it.
+  let voice = null;
+  if (lexUi.preferredVoiceURI && lexUi.voices.length) {
+    voice = lexUi.voices.find(x => x.voiceURI === lexUi.preferredVoiceURI) || null;
+  }
+  // Otherwise fall back to auto-picked Dutch voice
+  if (!voice) voice = lexUi.voice || pickDutchVoiceFrom(speechSynthesis.getVoices());
   if (!voice) voice = await refreshDutchVoice();
 
-  // Validate it really is a Dutch voice (not silently swapped to system default)
-  const isDutch = voice && (/^nl(\b|[-_])/i.test(voice.lang) || /dutch|nederlands|flemish|vlaams/i.test(voice.name));
-  if (!isDutch) {
+  // Only block when no voice at all (or auto-picker returned nothing).
+  // If the user manually picked a non-Dutch voice via "Show all", trust them.
+  if (!voice) {
+    flashVoiceWarning("No voice available. Open Lexicon → Voice picker to choose one.");
+    return;
+  }
+  const isDutch = /^nl(\b|[-_])/i.test(voice.lang) || /dutch|nederlands|flemish|vlaams/i.test(voice.name);
+  const userPicked = !!lexUi.preferredVoiceURI && voice.voiceURI === lexUi.preferredVoiceURI;
+  if (!isDutch && !userPicked) {
     flashVoiceWarning("No Dutch voice available — audio disabled to avoid playing English.");
     return;
   }
