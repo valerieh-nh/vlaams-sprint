@@ -296,6 +296,22 @@
   }
   .vocab-audio-btn:hover { background: var(--orange); color: white; border-color: var(--orange); }
   .vocab-audio-btn.playing { background: var(--orange); color: white; animation: pulse 1s ease-in-out infinite; }
+  .vocab-remove-btn {
+    position: absolute; top: 10px; left: 10px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; line-height: 1; padding: 0;
+  }
+  .vocab-remove-btn:hover { background: var(--red); color: white; border-color: var(--red); }
+  .vocab-card.saved .vocab-flemish { padding-left: 28px; }
+  .vocab-card.saved .vocab-english { padding-left: 28px; }
+  .vocab-saved-tag {
+    display: inline-block; background: rgba(46,204,113,0.12); color: var(--green);
+    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle;
+  }
   .vocab-filter { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
   .filter-btn {
     background: var(--surface); border: 1.5px solid var(--border);
@@ -303,12 +319,38 @@
     font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer;
   }
   .filter-btn.active { border-color: var(--orange); color: var(--orange); background: var(--orange-glow); }
+  .vocab-search-row { display: flex; gap: 8px; margin-bottom: 14px; align-items: stretch; }
   .vocab-search {
-    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+    flex: 1; background: var(--surface); border: 1.5px solid var(--border);
     border-radius: 10px; padding: 10px 14px; color: var(--text);
-    font-family: var(--font); font-size: 14px; outline: none; margin-bottom: 14px;
+    font-family: var(--font); font-size: 14px; outline: none;
   }
   .vocab-search:focus { border-color: var(--orange); }
+  .vocab-dict-btn {
+    background: var(--surface2); border: 1.5px solid var(--border);
+    color: var(--text); font-family: var(--font); font-size: 12px;
+    font-weight: 700; padding: 0 14px; border-radius: 10px; cursor: pointer;
+    white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+  .vocab-dict-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+  .vocab-dict-btn:disabled { opacity: 0.45; cursor: default; }
+  .vocab-dict-prompt {
+    grid-column: 1 / -1;
+    background: var(--surface); border: 1.5px dashed var(--border);
+    border-radius: var(--radius); padding: 20px; text-align: center;
+  }
+  .vocab-dict-prompt p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+  .vocab-card.dict-result { border-color: var(--blue); background: rgba(58,155,213,0.04); }
+  .vocab-dict-tag {
+    display: inline-block; background: rgba(58,155,213,0.12); color: var(--blue);
+    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle;
+  }
+  .vocab-card.dict-result .vocab-flemish { padding-left: 28px; }
+  .vocab-card.dict-result .vocab-english { padding-left: 28px; }
+  .vocab-card-actions { display: flex; gap: 6px; margin-top: 10px; padding-left: 28px; }
+  .vocab-card-actions .tx-btn { font-size: 11px; padding: 6px 12px; }
   .voice-note {
     font-size: 11px; color: var(--text-muted); margin-bottom: 14px;
     padding: 8px 12px; background: var(--surface2);
@@ -329,6 +371,23 @@
     color: var(--text-muted); font-weight: 600; letter-spacing: 0.4px;
   }
   .tx-direction strong { color: var(--orange); }
+  .tx-dir-group { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  .tx-dir-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text-muted); font-family: var(--font);
+    border-radius: 14px; padding: 4px 10px; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.4px; cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+  }
+  .tx-dir-chip:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .tx-dir-chip.active {
+    background: var(--orange-glow); border-color: var(--orange); color: var(--orange);
+  }
+  .tx-dir-chip strong { color: inherit; font-weight: 700; }
+  .tx-btn.save { background: var(--green); }
+  .tx-btn.save:hover { background: #27ae60; }
+  .tx-btn.save.saved { background: var(--surface2); border: 1.5px solid var(--green); color: var(--green); }
   .tx-input-row { display: flex; gap: 8px; align-items: stretch; margin-bottom: 10px; }
   .tx-input {
     flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
@@ -594,23 +653,33 @@
   <div class="tx-panel">
     <div class="tx-head">
       <div class="tx-title">Translate &amp; speak</div>
-      <div class="tx-direction" id="tx-direction" title="Auto-detected from input">
-        Auto: <strong id="tx-dir-from">NL</strong> → <strong id="tx-dir-to">EN</strong>
+      <div class="tx-dir-group" id="tx-dir-group" title="Pick a direction or let it auto-detect">
+        <button type="button" class="tx-dir-chip active" data-dir="auto">
+          Auto: <strong id="tx-dir-from">NL</strong>→<strong id="tx-dir-to">EN</strong>
+        </button>
+        <button type="button" class="tx-dir-chip" data-dir="nl-en">🇧🇪 NL → 🇬🇧 EN</button>
+        <button type="button" class="tx-dir-chip" data-dir="en-nl">🇬🇧 EN → 🇧🇪 NL</button>
       </div>
     </div>
     <div class="tx-input-row">
       <textarea class="tx-input" id="tx-input" rows="2"
-        placeholder="Type Dutch / Flemish / English here…"></textarea>
+        placeholder="Type English to learn the Flemish word, or Dutch/Flemish to translate to English…"></textarea>
       <div class="tx-actions">
         <button class="tx-btn" id="tx-translate">Translate</button>
         <button class="tx-btn secondary" id="tx-speak-input">▶ Speak</button>
+        <button class="tx-btn save write-only" id="tx-save" style="display:none">💾 Save</button>
       </div>
     </div>
     <div class="tx-result" id="tx-result"></div>
     <div class="tx-recent" id="tx-recent"></div>
   </div>
 
-  <input type="text" class="vocab-search" id="vocab-search" placeholder="Search Flemish or English…" />
+  <div class="vocab-search-row">
+    <input type="text" class="vocab-search" id="vocab-search"
+      placeholder="Search Flemish, English, or any word to look up…" />
+    <button class="vocab-dict-btn" id="vocab-dict-btn" disabled
+      title="Look the current search term up in the online dictionary">🔍 Dictionary</button>
+  </div>
   <div class="vocab-filter" id="vocab-filter"></div>
   <div class="vocab-grid" id="vocab-grid"></div>
 </div>
@@ -952,7 +1021,9 @@ function defaultState() {
     srs:{}, weeklyTests:{},
     quizSession:{ category:"All", lastFeedback:null, score:0, total:0 },
     preferredVoiceURI: null,
-    recentLookups: []  // [{text, lang, translation, dir, t}], newest first, max 10
+    recentLookups: [], // [{srcLang, dstLang, srcText, dstText, t}], newest first, max 10
+    savedVocab: [],    // [{fl, en, t}] — user-curated learning list, newest first
+    txDirection: "auto" // "auto" | "nl-en" | "en-nl"
   };
 }
 function loadState() {
@@ -1810,7 +1881,10 @@ const lexUi = {
   voice:null,
   voices:[],
   preferredVoiceURI: null,  // user-picked, persisted
-  showAllVoices: false      // mobile escape hatch when no Dutch voice matches
+  showAllVoices: false,     // mobile escape hatch when no Dutch voice matches
+  dictResult: null,         // inline online-lookup result { fl, en, srcLang, dstLang, srcText, dstText }
+  dictLoading: false,
+  dictError: null
 };
 
 function getDutchCandidates(voices) {
@@ -2162,34 +2236,54 @@ function initLexiconOnce() {
   }
   updateVoiceNote();
 
-  // Filter pills
-  const filterEl = document.getElementById("vocab-filter");
-  filterEl.innerHTML = "";
-  const cats = ["All", ...Object.keys(VOCAB_DATA)];
-  cats.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.className = "filter-btn" + (cat === lexUi.filter ? " active" : "");
-    btn.textContent = cat;
-    btn.dataset.cat = cat;
-    btn.addEventListener("click", () => {
-      lexUi.filter = cat;
-      filterEl.querySelectorAll(".filter-btn").forEach(b =>
-        b.classList.toggle("active", b.dataset.cat === cat));
-      renderLexicon();
-    });
-    filterEl.appendChild(btn);
-  });
+  // Filter pills (rebuilt every render so "Saved" appears/disappears with state)
+  renderLexiconFilters();
 
   // Search
   const search = document.getElementById("vocab-search");
+  const dictBtn = document.getElementById("vocab-dict-btn");
   search.value = lexUi.search;
+  dictBtn.disabled = !lexUi.search.trim();
   search.addEventListener("input", e => {
     lexUi.search = e.target.value.toLowerCase();
+    dictBtn.disabled = !lexUi.search.trim();
     renderLexicon();
+  });
+  search.addEventListener("keydown", e => {
+    if (e.key === "Enter" && lexUi.search.trim()) {
+      e.preventDefault();
+      lookupInDictionary(lexUi.search.trim());
+    }
+  });
+  dictBtn.addEventListener("click", () => {
+    if (lexUi.search.trim()) lookupInDictionary(lexUi.search.trim());
   });
 
   // Translator
   initTranslator();
+}
+
+function renderLexiconFilters() {
+  const filterEl = document.getElementById("vocab-filter");
+  if (!filterEl) return;
+  filterEl.innerHTML = "";
+  const hasSaved = (state.savedVocab || []).length > 0 && !VISITOR_MODE;
+  const cats = ["All", ...(hasSaved ? ["Saved"] : []), ...Object.keys(VOCAB_DATA)];
+  // If current filter no longer exists (e.g. user cleared saved list while on "Saved"), reset to All
+  if (!cats.includes(lexUi.filter)) lexUi.filter = "All";
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn" + (cat === lexUi.filter ? " active" : "");
+    btn.textContent = cat === "Saved"
+      ? `★ Saved (${state.savedVocab.length})`
+      : cat;
+    btn.dataset.cat = cat;
+    btn.addEventListener("click", () => {
+      lexUi.filter = cat;
+      renderLexicon();
+    });
+    filterEl.appendChild(btn);
+  });
 }
 
 // ============================================================
@@ -2246,12 +2340,35 @@ function detectLanguage(raw) {
   return nl >= en ? "nl" : "en";
 }
 
-function updateDirectionUI(text) {
+// Resolve the active translation direction.
+// "auto"  → detect from input
+// "nl-en" → force NL → EN
+// "en-nl" → force EN → NL
+function resolveDirection(text) {
+  const mode = state.txDirection || "auto";
+  if (mode === "nl-en") return { src: "nl", dst: "en" };
+  if (mode === "en-nl") return { src: "en", dst: "nl" };
   const src = detectLanguage(text);
-  const dst = src === "nl" ? "en" : "nl";
-  document.getElementById("tx-dir-from").textContent = src.toUpperCase();
-  document.getElementById("tx-dir-to").textContent = dst.toUpperCase();
+  return { src, dst: src === "nl" ? "en" : "nl" };
+}
+
+function updateDirectionUI(text) {
+  const { src, dst } = resolveDirection(text);
+  const fromEl = document.getElementById("tx-dir-from");
+  const toEl = document.getElementById("tx-dir-to");
+  if (fromEl) fromEl.textContent = src.toUpperCase();
+  if (toEl) toEl.textContent = dst.toUpperCase();
   return { src, dst };
+}
+
+function setTxDirection(mode) {
+  state.txDirection = mode;
+  saveState();
+  document.querySelectorAll("#tx-dir-group .tx-dir-chip").forEach(c => {
+    c.classList.toggle("active", c.dataset.dir === mode);
+  });
+  const text = (document.getElementById("tx-input").value || "");
+  updateDirectionUI(text);
 }
 
 async function translateMyMemory(text, src, dst) {
@@ -2309,6 +2426,7 @@ function renderRecentLookups() {
       // Re-show the cached translation immediately
       txState.lastResult = entry;
       showTxResult(buildResultHTML(entry), false);
+      updateSaveButtonState();
     });
     host.appendChild(chip);
   });
@@ -2342,6 +2460,71 @@ function buildResultHTML(entry) {
     <div>${escapeHTML(entry.dstText)}</div>`;
 }
 
+// ----- Saved vocab (user-curated learning list) -----
+
+// Returns {fl, en} from a translation entry, regardless of direction
+function pairFromEntry(entry) {
+  return entry.srcLang === "nl"
+    ? { fl: entry.srcText, en: entry.dstText }
+    : { fl: entry.dstText, en: entry.srcText };
+}
+
+function vocabAlreadySaved(fl) {
+  const key = (fl || "").toLowerCase().trim();
+  return (state.savedVocab || []).some(v => v.fl.toLowerCase().trim() === key);
+}
+
+function saveCurrentLookup() {
+  if (VISITOR_MODE) return;
+  if (!txState.lastResult) return;
+  const { fl, en } = pairFromEntry(txState.lastResult);
+  if (!fl || !en) return;
+  if (vocabAlreadySaved(fl)) return;
+  state.savedVocab = state.savedVocab || [];
+  state.savedVocab.unshift({ fl, en, t: Date.now() });
+  saveState();
+  renderSavedVocab();
+  updateSaveButtonState();
+  showShareToast(`Saved "${fl}" to your vocab ✓`);
+}
+
+function removeSavedVocab(fl) {
+  if (VISITOR_MODE) return;
+  const key = (fl || "").toLowerCase().trim();
+  state.savedVocab = (state.savedVocab || [])
+    .filter(v => v.fl.toLowerCase().trim() !== key);
+  saveState();
+  renderSavedVocab();
+  updateSaveButtonState();
+}
+
+function updateSaveButtonState() {
+  const btn = document.getElementById("tx-save");
+  if (!btn) return;
+  if (!txState.lastResult || VISITOR_MODE) {
+    btn.style.display = "none";
+    return;
+  }
+  btn.style.display = "";
+  const { fl } = pairFromEntry(txState.lastResult);
+  if (vocabAlreadySaved(fl)) {
+    btn.classList.add("saved");
+    btn.textContent = "✓ Saved";
+    btn.disabled = true;
+  } else {
+    btn.classList.remove("saved");
+    btn.textContent = "💾 Save";
+    btn.disabled = false;
+  }
+}
+
+// Saved entries are rendered as part of the unified lexicon grid.
+// This thin wrapper just refreshes the lexicon view (and the filter chips,
+// so the "Saved" pill appears/disappears as the list grows or empties).
+function renderSavedVocab() {
+  if (document.getElementById("vocab-grid")) renderLexicon();
+}
+
 function escapeHTML(s) {
   return String(s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -2372,7 +2555,10 @@ async function runTranslate() {
     txState.lastResult = entry;
     showTxResult(buildResultHTML(entry), false);
     pushRecentLookup(entry);
+    updateSaveButtonState();
   } catch (err) {
+    txState.lastResult = null;
+    updateSaveButtonState();
     showTxResult(
       `Translation failed: ${escapeHTML(err.message || "network error")}. ` +
       `MyMemory's free tier is rate-limited (~5k chars/day per IP).`,
@@ -2404,6 +2590,8 @@ function initTranslator() {
   const input = document.getElementById("tx-input");
   const txBtn = document.getElementById("tx-translate");
   const spkBtn = document.getElementById("tx-speak-input");
+  const saveBtn = document.getElementById("tx-save");
+  const dirGroup = document.getElementById("tx-dir-group");
 
   input.addEventListener("input", e => updateDirectionUI(e.target.value));
   input.addEventListener("keydown", e => {
@@ -2415,46 +2603,216 @@ function initTranslator() {
   });
   txBtn.addEventListener("click", runTranslate);
   spkBtn.addEventListener("click", speakInput);
+  if (saveBtn) saveBtn.addEventListener("click", saveCurrentLookup);
 
-  updateDirectionUI("");
+  if (dirGroup) {
+    dirGroup.querySelectorAll(".tx-dir-chip").forEach(chip => {
+      chip.addEventListener("click", () => setTxDirection(chip.dataset.dir));
+    });
+  }
+
+  // Restore saved direction preference
+  setTxDirection(state.txDirection || "auto");
   renderRecentLookups();
+  renderSavedVocab();
+  updateSaveButtonState();
+}
+
+// Build the searchable pool. Saved entries are marked with `saved:true`.
+// Curriculum entries that share a Flemish form with a saved entry get their
+// `saved` flag set too, so the user sees a single card with both flavors.
+function buildLexiconPool() {
+  const savedList = (VISITOR_MODE ? [] : (state.savedVocab || []))
+    .map(v => ({ fl: v.fl, en: v.en, wk: "Saved", saved: true, t: v.t || 0 }));
+  const savedKeys = new Set(savedList.map(v => v.fl.toLowerCase().trim()));
+
+  const builtin = Object.entries(VOCAB_DATA).flatMap(([wk, arr]) =>
+    arr.map(v => ({
+      ...v, wk,
+      saved: savedKeys.has(v.fl.toLowerCase().trim())
+    }))
+  );
+
+  // Saved entries that don't duplicate a curriculum word
+  const builtinKeys = new Set(builtin.map(v => v.fl.toLowerCase().trim()));
+  const savedOnly = savedList.filter(v =>
+    !builtinKeys.has(v.fl.toLowerCase().trim()));
+
+  return { builtin, savedList, savedOnly };
 }
 
 function renderLexicon() {
   initLexiconOnce();
+  renderLexiconFilters();
+
   const grid = document.getElementById("vocab-grid");
   grid.innerHTML = "";
-  const data = lexUi.filter === "All"
-    ? Object.entries(VOCAB_DATA).flatMap(([wk, arr]) => arr.map(v => ({...v, wk})))
-    : (VOCAB_DATA[lexUi.filter] || []).map(v => ({...v, wk:lexUi.filter}));
 
-  const filtered = lexUi.search
+  const { builtin, savedList, savedOnly } = buildLexiconPool();
+  const term = (lexUi.search || "").toLowerCase().trim();
+
+  let data;
+  if (lexUi.filter === "Saved") {
+    data = savedList;
+  } else if (lexUi.filter === "All") {
+    // Saved-only entries appear first (newest first), then curriculum order
+    data = [...savedOnly.sort((a,b) => b.t - a.t), ...builtin];
+  } else {
+    data = (VOCAB_DATA[lexUi.filter] || []).map(v => ({
+      ...v, wk: lexUi.filter,
+      saved: savedList.some(s => s.fl.toLowerCase().trim() === v.fl.toLowerCase().trim())
+    }));
+  }
+
+  const filtered = term
     ? data.filter(v =>
-        v.fl.toLowerCase().includes(lexUi.search) ||
-        v.en.toLowerCase().includes(lexUi.search) ||
-        (v.note || "").toLowerCase().includes(lexUi.search))
+        v.fl.toLowerCase().includes(term) ||
+        v.en.toLowerCase().includes(term) ||
+        (v.note || "").toLowerCase().includes(term))
     : data;
 
+  // Inline dictionary lookup card (if active) goes at the top
+  if (lexUi.dictResult || lexUi.dictLoading || lexUi.dictError) {
+    grid.appendChild(buildDictResultCard());
+  }
+
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="quiz-empty"><div class="big">No matches</div><div>Try another search term.</div></div>`;
+    if (term) {
+      const prompt = document.createElement("div");
+      prompt.className = "vocab-dict-prompt";
+      prompt.innerHTML = `
+        <div class="big" style="font-family:var(--font-cond);font-weight:900;font-size:22px;margin-bottom:6px;">
+          No local match for "${escapeHTML(term)}"
+        </div>
+        <p>Look it up in the online dictionary — works either direction.</p>
+        <button class="tx-btn" id="dict-lookup-fallback">🔍 Look up "${escapeHTML(term)}"</button>`;
+      grid.appendChild(prompt);
+      prompt.querySelector("#dict-lookup-fallback")
+        .addEventListener("click", () => lookupInDictionary(term));
+    } else if (!lexUi.dictResult && !lexUi.dictLoading) {
+      grid.innerHTML += `<div class="quiz-empty"><div class="big">Nothing here yet</div><div>Pick a week or save a word from the translator above.</div></div>`;
+    }
     return;
   }
 
-  filtered.forEach(v => {
-    const card = document.createElement("div");
-    card.className = "vocab-card";
-    card.innerHTML = `
-      <button class="vocab-audio-btn" title="Play audio" aria-label="Play audio for ${v.fl}">▶</button>
-      <div class="vocab-flemish">${v.fl}</div>
-      <div class="vocab-english">${v.en}</div>
-      ${v.note ? `<div class="vocab-note">${v.note}</div>` : ""}`;
-    const btn = card.querySelector(".vocab-audio-btn");
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      speak(v.fl, btn);
-    });
-    grid.appendChild(card);
+  filtered.forEach(v => grid.appendChild(buildVocabCard(v)));
+}
+
+function buildVocabCard(v) {
+  const card = document.createElement("div");
+  card.className = "vocab-card" + (v.saved ? " saved" : "");
+  const tag = v.saved ? `<span class="vocab-saved-tag">saved</span>` : "";
+  const removeBtn = v.saved
+    ? `<button class="vocab-remove-btn" title="Remove from saved" aria-label="Remove ${escapeHTML(v.fl)}">×</button>`
+    : "";
+  card.innerHTML = `
+    ${removeBtn}
+    <button class="vocab-audio-btn" title="Play audio" aria-label="Play audio for ${escapeHTML(v.fl)}">▶</button>
+    <div class="vocab-flemish">${escapeHTML(v.fl)}${tag}</div>
+    <div class="vocab-english">${escapeHTML(v.en)}</div>
+    ${v.note ? `<div class="vocab-note">${escapeHTML(v.note)}</div>` : ""}`;
+  const audio = card.querySelector(".vocab-audio-btn");
+  audio.addEventListener("click", e => {
+    e.stopPropagation();
+    speak(v.fl, audio);
   });
+  const rm = card.querySelector(".vocab-remove-btn");
+  if (rm) rm.addEventListener("click", e => {
+    e.stopPropagation();
+    removeSavedVocab(v.fl);
+  });
+  return card;
+}
+
+function buildDictResultCard() {
+  const card = document.createElement("div");
+  card.className = "vocab-card dict-result";
+
+  if (lexUi.dictLoading) {
+    card.innerHTML = `
+      <div class="vocab-flemish" style="padding-left:0">🔍 Looking up…</div>
+      <div class="vocab-english" style="padding-left:0;opacity:0.7">${escapeHTML(lexUi.dictLoading)}</div>`;
+    return card;
+  }
+  if (lexUi.dictError) {
+    card.innerHTML = `
+      <div class="vocab-flemish" style="padding-left:0;color:var(--red)">Lookup failed</div>
+      <div class="vocab-english" style="padding-left:0">${escapeHTML(lexUi.dictError)}</div>
+      <div class="vocab-card-actions" style="padding-left:0">
+        <button class="tx-btn secondary" data-act="dismiss">Dismiss</button>
+      </div>`;
+    card.querySelector('[data-act="dismiss"]').addEventListener("click", dismissDictResult);
+    return card;
+  }
+
+  const r = lexUi.dictResult;
+  const alreadySaved = vocabAlreadySaved(r.fl);
+  card.innerHTML = `
+    <button class="vocab-remove-btn" data-act="dismiss" title="Dismiss" aria-label="Dismiss lookup">×</button>
+    <button class="vocab-audio-btn" title="Play audio" aria-label="Play audio for ${escapeHTML(r.fl)}">▶</button>
+    <div class="vocab-flemish">${escapeHTML(r.fl)}<span class="vocab-dict-tag">dictionary</span></div>
+    <div class="vocab-english">${escapeHTML(r.en)}</div>
+    <div class="vocab-card-actions">
+      <button class="tx-btn save" data-act="save" ${alreadySaved ? "disabled" : ""}>
+        ${alreadySaved ? "✓ Saved" : "💾 Save to vocab"}
+      </button>
+    </div>`;
+  const audio = card.querySelector(".vocab-audio-btn");
+  audio.addEventListener("click", e => { e.stopPropagation(); speak(r.fl, audio); });
+  card.querySelector('[data-act="dismiss"]').addEventListener("click", dismissDictResult);
+  const saveBtn = card.querySelector('[data-act="save"]');
+  if (saveBtn && !alreadySaved) {
+    saveBtn.addEventListener("click", () => saveDictResult());
+  }
+  return card;
+}
+
+function dismissDictResult() {
+  lexUi.dictResult = null;
+  lexUi.dictError = null;
+  lexUi.dictLoading = false;
+  renderLexicon();
+}
+
+function saveDictResult() {
+  if (VISITOR_MODE) return;
+  const r = lexUi.dictResult;
+  if (!r) return;
+  if (vocabAlreadySaved(r.fl)) return;
+  state.savedVocab = state.savedVocab || [];
+  state.savedVocab.unshift({ fl: r.fl, en: r.en, t: Date.now() });
+  saveState();
+  showShareToast(`Saved "${r.fl}" to your vocab ✓`);
+  renderLexicon();
+}
+
+async function lookupInDictionary(term) {
+  if (!term) return;
+  // Reuse the translator's direction resolution + API
+  lexUi.dictLoading = `Translating "${term}"…`;
+  lexUi.dictResult = null;
+  lexUi.dictError = null;
+  renderLexicon();
+
+  try {
+    const { src, dst } = resolveDirection(term);
+    const translated = await translateMyMemory(term, src, dst);
+    if (!translated) throw new Error("Empty translation");
+    const fl = src === "nl" ? term : translated;
+    const en = src === "nl" ? translated : term;
+    lexUi.dictResult = {
+      srcLang: src, dstLang: dst, srcText: term, dstText: translated, fl, en
+    };
+    lexUi.dictLoading = false;
+    // Also feed the recent-lookup history in the translator panel
+    pushRecentLookup({
+      srcLang: src, dstLang: dst, srcText: term, dstText: translated, t: Date.now()
+    });
+  } catch (err) {
+    lexUi.dictLoading = false;
+    lexUi.dictError = `${err.message || "network error"}. MyMemory's free tier is rate-limited (~5k chars/day per IP).`;
+  }
+  renderLexicon();
 }
 
 // ============================================================
