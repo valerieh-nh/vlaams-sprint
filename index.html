@@ -493,6 +493,90 @@
     animation: confetti-fall linear forwards; z-index: 9999; border-radius: 2px;
   }
 
+  /* GRAMMAR REFERENCE */
+  .grammar-search-row { display: flex; gap: 8px; margin-bottom: 14px; align-items: stretch; }
+  .grammar-search {
+    flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none;
+  }
+  .grammar-search:focus { border-color: var(--orange); }
+  .grammar-topics { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .grammar-topic-btn {
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--text-muted); font-family: var(--font); font-size: 12px;
+    font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .grammar-topic-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .grammar-section { margin-bottom: 28px; }
+  .grammar-section-title {
+    font-family: var(--font-cond); font-weight: 900; font-size: 20px;
+    color: var(--text); margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--border); letter-spacing: 0.5px;
+  }
+  .grammar-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px; margin-bottom: 12px;
+  }
+  .grammar-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .grammar-card-title {
+    font-family: var(--font-cond); font-weight: 700; font-size: 17px;
+    color: var(--orange); flex: 1;
+  }
+  .grammar-week-badge {
+    background: var(--orange-glow); color: var(--orange);
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; padding: 3px 10px; border-radius: 12px;
+    white-space: nowrap;
+  }
+  .grammar-card p { font-size: 14px; line-height: 1.55; margin-bottom: 8px; color: var(--text); }
+  .grammar-card p:last-child { margin-bottom: 0; }
+  .grammar-card ul { list-style: none; padding: 0; margin: 6px 0 10px; }
+  .grammar-card li {
+    font-size: 13.5px; line-height: 1.55; margin-bottom: 4px;
+    padding-left: 14px; position: relative;
+  }
+  .grammar-card li::before {
+    content: "•"; color: var(--orange); position: absolute; left: 0;
+  }
+  .grammar-card code, .grammar-card em {
+    font-family: var(--font); font-style: italic; color: var(--text);
+    background: rgba(255,255,255,0.05);
+    padding: 1px 6px; border-radius: 4px; font-size: 13px;
+  }
+  .grammar-example { color: var(--text); font-style: italic; }
+  .grammar-example strong { color: var(--orange); font-style: normal; font-weight: 700; }
+  .grammar-table {
+    width: 100%; border-collapse: collapse; margin: 10px 0;
+    font-size: 13px; background: var(--surface2); border-radius: 8px; overflow: hidden;
+  }
+  .grammar-table th, .grammar-table td {
+    padding: 6px 10px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .grammar-table th {
+    background: var(--surface3); color: var(--text-muted);
+    font-family: var(--font-cond); font-weight: 700;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .grammar-table tr:last-child td { border-bottom: none; }
+  .grammar-table td.hi { color: var(--orange); font-weight: 600; }
+  .grammar-note {
+    background: rgba(58,155,213,0.08); border-left: 3px solid var(--blue);
+    border-radius: 4px; padding: 8px 12px; margin: 8px 0;
+    font-size: 13px; line-height: 1.5;
+  }
+  .grammar-note strong { color: var(--blue); }
+  .grammar-trap {
+    background: rgba(231,76,60,0.08); border-left: 3px solid var(--red);
+    border-radius: 4px; padding: 8px 12px; margin: 8px 0;
+    font-size: 13px; line-height: 1.5;
+  }
+  .grammar-trap strong { color: var(--red); }
+  .grammar-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+  .grammar-empty .big { font-family: var(--font-cond); font-weight: 900; font-size: 24px; color: var(--text); margin-bottom: 8px; }
+
   /* RESPONSIVE */
   @media (max-width: 520px) {
     .hero-stats { grid-template-columns: repeat(2, 1fr); }
@@ -521,6 +605,8 @@
     <button class="nav-tab" data-page="quiz">SRS Quiz</button>
     <button class="nav-tab" data-page="weekly">Weekly Tests</button>
     <button class="nav-tab" data-page="lexicon">Lexicon &amp; Audio</button>
+    <button class="nav-tab" data-page="grammar">Grammar</button>
+    <button class="nav-tab write-only" data-page="chat">AI Coach</button>
   </div>
   <div class="streak-badge">
     <span class="streak-fire">🔥</span>
@@ -682,6 +768,676 @@
   </div>
   <div class="vocab-filter" id="vocab-filter"></div>
   <div class="vocab-grid" id="vocab-grid"></div>
+</div>
+
+<!-- GRAMMAR REFERENCE -->
+<div class="page" id="page-grammar">
+  <div class="section-header" style="margin-top:0">
+    <div class="section-title">Grammar reference</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grammar-search-row">
+    <input type="text" class="grammar-search" id="grammar-search"
+      placeholder="Search rules, examples, or terms — e.g. 'kofschip', 'de or het', 'V2'" />
+  </div>
+  <div class="grammar-topics" id="grammar-topics">
+    <button class="grammar-topic-btn" data-topic="structure">Sentence order</button>
+    <button class="grammar-topic-btn" data-topic="verbs">Verbs</button>
+    <button class="grammar-topic-btn" data-topic="nouns">Nouns &amp; articles</button>
+    <button class="grammar-topic-btn" data-topic="adjectives">Adjectives</button>
+    <button class="grammar-topic-btn" data-topic="pronouns">Pronouns</button>
+    <button class="grammar-topic-btn" data-topic="prepositions">Prepositions</button>
+    <button class="grammar-topic-btn" data-topic="negation">Negation</button>
+    <button class="grammar-topic-btn" data-topic="antwerp">Antwerp tussentaal</button>
+  </div>
+
+  <div class="grammar-empty" id="grammar-empty" style="display:none">
+    <div class="big">Nothing matches</div>
+    <div>Try another search term.</div>
+  </div>
+
+  <!-- SENTENCE STRUCTURE -->
+  <section class="grammar-section" id="g-structure">
+    <div class="grammar-section-title">Sentence order</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">V2 word order rule</div>
+        <span class="grammar-week-badge">Week 1</span>
+      </div>
+      <p>The verb sits in <strong>second position</strong> in a main sentence. Always.</p>
+      <ul>
+        <li>Standard order is Subject – Verb – rest: <em>Ik ga morgen naar de markt.</em></li>
+        <li>Front a time, place, or manner and the subject jumps to <strong>after</strong> the verb.</li>
+      </ul>
+      <p class="grammar-example"><strong>Morgen</strong> ga ik naar de markt. <span style="opacity:0.6">(not "Morgen ik ga...")</span></p>
+      <p class="grammar-example"><strong>Op zaterdag</strong> fiets ik in de stad.</p>
+      <p class="grammar-example"><strong>Soms</strong> drink ik een pintje na het werk.</p>
+      <div class="grammar-note"><strong>Mantra:</strong> verb in seat 2, no exceptions. The subject either comes before it or right after; the verb itself doesn't move.</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Modal + infinitive order</div>
+        <span class="grammar-week-badge">Week 2</span>
+      </div>
+      <p>With a modal verb (<em>willen, kunnen, mogen, moeten, zullen</em>), the modal stays in seat 2 and the main verb (infinitive) goes to the <strong>end</strong>.</p>
+      <p class="grammar-example">Ik wil een pintje <strong>drinken</strong>.</p>
+      <p class="grammar-example">Mag ik de kaart <strong>hebben</strong>?</p>
+      <p class="grammar-example">We moeten morgen vroeg <strong>opstaan</strong>.</p>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Perfect tense order</div>
+        <span class="grammar-week-badge">Week 4</span>
+      </div>
+      <p>Auxiliary (<em>hebben</em> or <em>zijn</em>) sits in seat 2, past participle goes to the <strong>end</strong>.</p>
+      <p class="grammar-example">Ik <strong>heb</strong> gisteren een biertje <strong>gedronken</strong>.</p>
+      <p class="grammar-example">Wij <strong>zijn</strong> vorige zondag naar zee <strong>gegaan</strong>.</p>
+      <p>Questions: auxiliary first, then subject, participle at end.</p>
+      <p class="grammar-example">Heb je dat al <strong>gezien</strong>?</p>
+      <p class="grammar-example">Wat heb je gisteren <strong>gegeten</strong>?</p>
+    </div>
+  </section>
+
+  <!-- VERBS -->
+  <section class="grammar-section" id="g-verbs">
+    <div class="grammar-section-title">Verbs &amp; conjugation</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Present tense — regular</div>
+        <span class="grammar-week-badge">Week 1</span>
+      </div>
+      <p>Take the infinitive, drop the <code>-en</code>, add endings.</p>
+      <table class="grammar-table">
+        <thead><tr><th>Pronoun</th><th>werken</th><th>wonen</th><th>drinken</th></tr></thead>
+        <tbody>
+          <tr><td>ik</td><td>werk</td><td>woon</td><td>drink</td></tr>
+          <tr><td>jij / hij / zij</td><td>werkt</td><td>woont</td><td>drinkt</td></tr>
+          <tr><td>wij / jullie / zij</td><td>werken</td><td>wonen</td><td>drinken</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-note"><strong>Plural rule:</strong> wij / jullie / zij + verb stays as the <em>infinitive</em> (the -en form). Easiest tense in Dutch.</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Present tense — the four irregulars</div>
+        <span class="grammar-week-badge">Week 1</span>
+      </div>
+      <p>Memorise these. You'll use them constantly.</p>
+      <table class="grammar-table">
+        <thead><tr><th></th><th>zijn (be)</th><th>hebben (have)</th><th>gaan (go)</th><th>doen (do)</th></tr></thead>
+        <tbody>
+          <tr><td>ik</td><td class="hi">ben</td><td class="hi">heb</td><td class="hi">ga</td><td class="hi">doe</td></tr>
+          <tr><td>jij</td><td>bent</td><td>hebt</td><td>gaat</td><td>doet</td></tr>
+          <tr><td>hij / zij</td><td>is</td><td>heeft</td><td>gaat</td><td>doet</td></tr>
+          <tr><td>wij / jullie / zij</td><td>zijn</td><td>hebben</td><td>gaan</td><td>doen</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Modal verbs</div>
+        <span class="grammar-week-badge">Week 2</span>
+      </div>
+      <p>Helpers you stick before another verb to soften, request, or signal intent. The main verb (infinitive) goes to the end.</p>
+      <table class="grammar-table">
+        <thead><tr><th></th><th>willen (want)</th><th>kunnen (can)</th><th>mogen (may)</th><th>moeten (must)</th><th>zullen (shall)</th></tr></thead>
+        <tbody>
+          <tr><td>ik</td><td>wil</td><td>kan</td><td>mag</td><td>moet</td><td>zal</td></tr>
+          <tr><td>jij</td><td>wil(t)</td><td>kan / kunt</td><td>mag</td><td>moet</td><td>zal / zult</td></tr>
+          <tr><td>hij / zij</td><td>wil</td><td>kan</td><td>mag</td><td>moet</td><td>zal</td></tr>
+          <tr><td>plural</td><td>willen</td><td>kunnen</td><td>mogen</td><td>moeten</td><td>zullen</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-note"><strong>Politeness ladder:</strong> Ik wil… (blunt) → Ik wil graag… (soft) → Mag ik…? (polite) → Zou ik…? (formal).</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Perfect tense (past) formula</div>
+        <span class="grammar-week-badge">Week 4</span>
+      </div>
+      <p>Belgians use the perfect tense for almost everything past. Formula:</p>
+      <p><strong>[hebben / zijn]</strong> in seat 2 + [middle stuff] + <strong>[past participle]</strong> at the end.</p>
+      <p class="grammar-example">Ik <strong>heb</strong> gisteren een plant <strong>gekocht</strong>.</p>
+      <p class="grammar-example">Wij <strong>zijn</strong> naar Brugge <strong>gegaan</strong>.</p>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">'t Kofschip rule (regular participles)</div>
+        <span class="grammar-week-badge">Week 4</span>
+      </div>
+      <p>For regular verbs: <code>ge + stem + t/d</code>. To pick -t or -d:</p>
+      <ul>
+        <li>If the stem ends in <strong>t, k, f, s, ch, p</strong> → add <strong>-t</strong> (remember: <em>'t kofschip</em>).</li>
+        <li>Otherwise → add <strong>-d</strong>.</li>
+      </ul>
+      <table class="grammar-table">
+        <thead><tr><th>Verb</th><th>Stem ends in</th><th>Participle</th></tr></thead>
+        <tbody>
+          <tr><td>werken</td><td>k → -t</td><td>gewerkt</td></tr>
+          <tr><td>wonen</td><td>n → -d</td><td>gewoond</td></tr>
+          <tr><td>maken</td><td>k → -t</td><td>gemaakt</td></tr>
+          <tr><td>praten</td><td>t → -t</td><td>gepraat</td></tr>
+          <tr><td>leren</td><td>r → -d</td><td>geleerd</td></tr>
+          <tr><td>koken</td><td>k → -t</td><td>gekookt</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-trap"><strong>Watch out:</strong> verbs starting with <em>be-, ge-, ver-, ont-, her-</em> don't take an extra <em>ge-</em> prefix. <em>bestellen → besteld</em>, <em>betalen → betaald</em>, <em>verkopen → verkocht</em>.</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">hebben or zijn?</div>
+        <span class="grammar-week-badge">Week 4</span>
+      </div>
+      <p>Most verbs use <strong>hebben</strong>. Verbs of <strong>movement</strong> or <strong>change of state</strong> use <strong>zijn</strong>.</p>
+      <table class="grammar-table">
+        <thead><tr><th>Auxiliary</th><th>Verbs</th></tr></thead>
+        <tbody>
+          <tr><td class="hi">zijn</td><td>gaan, komen, blijven, beginnen, stoppen, worden, vertrekken, aankomen, fietsen/zwemmen/lopen (with destination), zijn itself</td></tr>
+          <tr><td class="hi">hebben</td><td>eten, drinken, kopen, zien, lezen, werken, doen, and almost everything else</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-note"><strong>Fiddly case:</strong> <em>Ik ben naar het werk gefietst</em> (destination = zijn) vs <em>Ik heb een uur gefietst</em> (no destination = hebben).</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Top 20 irregular past participles</div>
+        <span class="grammar-week-badge">Week 4</span>
+      </div>
+      <table class="grammar-table">
+        <thead><tr><th>Infinitive</th><th>Participle</th><th>Aux</th></tr></thead>
+        <tbody>
+          <tr><td>zijn</td><td class="hi">geweest</td><td>zijn</td></tr>
+          <tr><td>hebben</td><td class="hi">gehad</td><td>hebben</td></tr>
+          <tr><td>doen</td><td class="hi">gedaan</td><td>hebben</td></tr>
+          <tr><td>gaan</td><td class="hi">gegaan</td><td>zijn</td></tr>
+          <tr><td>komen</td><td class="hi">gekomen</td><td>zijn</td></tr>
+          <tr><td>zien</td><td class="hi">gezien</td><td>hebben</td></tr>
+          <tr><td>eten</td><td class="hi">gegeten</td><td>hebben</td></tr>
+          <tr><td>drinken</td><td class="hi">gedronken</td><td>hebben</td></tr>
+          <tr><td>kopen</td><td class="hi">gekocht</td><td>hebben</td></tr>
+          <tr><td>weten</td><td class="hi">geweten</td><td>hebben</td></tr>
+          <tr><td>denken</td><td class="hi">gedacht</td><td>hebben</td></tr>
+          <tr><td>brengen</td><td class="hi">gebracht</td><td>hebben</td></tr>
+          <tr><td>zoeken</td><td class="hi">gezocht</td><td>hebben</td></tr>
+          <tr><td>vinden</td><td class="hi">gevonden</td><td>hebben</td></tr>
+          <tr><td>krijgen</td><td class="hi">gekregen</td><td>hebben</td></tr>
+          <tr><td>geven</td><td class="hi">gegeven</td><td>hebben</td></tr>
+          <tr><td>nemen</td><td class="hi">genomen</td><td>hebben</td></tr>
+          <tr><td>schrijven</td><td class="hi">geschreven</td><td>hebben</td></tr>
+          <tr><td>lezen</td><td class="hi">gelezen</td><td>hebben</td></tr>
+          <tr><td>blijven</td><td class="hi">gebleven</td><td>zijn</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Simple future — two ways</div>
+        <span class="grammar-week-badge">Week 6</span>
+      </div>
+      <p>Belgians use the future less than English. Often present tense + a time word is enough: <em>morgen ga ik…</em> = "tomorrow I'll go".</p>
+      <ul>
+        <li><strong>gaan + infinitive</strong> — planned, near future. <em>Ik ga morgen werken.</em></li>
+        <li><strong>zullen + infinitive</strong> — abstract, prediction, promise. <em>Ik zal het doen.</em></li>
+      </ul>
+      <div class="grammar-note"><strong>Rule of thumb:</strong> use <em>gaan</em> 80% of the time in daily speech and you'll sound right.</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Conditional — zou + infinitive</div>
+        <span class="grammar-week-badge">Week 7</span>
+      </div>
+      <p>The politeness layer. <strong>zou</strong> for ik/jij/hij/zij/het, <strong>zouden</strong> for wij/jullie/zij. Infinitive at the end.</p>
+      <p class="grammar-example">Ik <strong>zou</strong> een pintje <strong>willen</strong>. (I'd like a beer.)</p>
+      <p class="grammar-example">Ik <strong>zou</strong> graag naar Gent <strong>gaan</strong>.</p>
+      <p class="grammar-example">Wat <strong>zou</strong> je <strong>doen</strong>?</p>
+      <div class="grammar-note"><strong>Everyday equivalent:</strong> <em>Ik wil graag…</em> is just as polite in cafés, and what Belgians actually say.</div>
+    </div>
+  </section>
+
+  <!-- NOUNS & ARTICLES -->
+  <section class="grammar-section" id="g-nouns">
+    <div class="grammar-section-title">Nouns &amp; articles</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">de or het?</div>
+        <span class="grammar-week-badge">Week 3</span>
+      </div>
+      <p>Every Dutch noun is either a <strong>de</strong> word or a <strong>het</strong> word. Two coping strategies:</p>
+      <ul>
+        <li>When in doubt, say <strong>de</strong>. About 75% of nouns are de-words.</li>
+        <li>Diminutives are <strong>always het</strong>. Stuck? Diminutivise it: <em>een biertje</em> is now safely <em>het biertje</em>.</li>
+      </ul>
+      <p><strong>Patterns that help:</strong></p>
+      <table class="grammar-table">
+        <thead><tr><th>Article</th><th>Applies to</th></tr></thead>
+        <tbody>
+          <tr><td class="hi">de</td><td>All plurals (de tafels, de huizen)</td></tr>
+          <tr><td class="hi">de</td><td>People, mostly (de man, de vrouw, de kok)</td></tr>
+          <tr><td class="hi">de</td><td>Endings -heid, -ing, -ie, -teit (de mogelijkheid)</td></tr>
+          <tr><td class="hi">het</td><td>Languages, months, days (het Nederlands, het Engels)</td></tr>
+          <tr><td class="hi">het</td><td>Endings -isme, -ment, -sel, -um (het document)</td></tr>
+          <tr><td class="hi">het</td><td>All diminutives (-je, -tje, -pje, -etje, -ke)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Diminutives</div>
+        <span class="grammar-week-badge">Week 3</span>
+      </div>
+      <p>Flemish loves making things small. Add an ending and it softens: <em>een bier</em> vs <em>een biertje</em> (a casual beer with friends).</p>
+      <table class="grammar-table">
+        <thead><tr><th>Rule</th><th>Ending</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Default after most consonants</td><td>-je</td><td>bier → biertje</td></tr>
+          <tr><td>Long vowel or r/l/n</td><td>-tje</td><td>minuut → minuutje</td></tr>
+          <tr><td>Long vowel + m</td><td>-pje</td><td>boom → boompje</td></tr>
+          <tr><td>Short vowel + r/l/m/n</td><td>-etje (double consonant)</td><td>bal → balletje</td></tr>
+          <tr><td>Antwerp regional</td><td>-ke</td><td>bier → bierke, huis → huizeke</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-note"><strong>Why bother?</strong> Diminutives soften requests, make you sound local, and sidestep the de/het problem (all diminutives are het).</div>
+    </div>
+  </section>
+
+  <!-- ADJECTIVES -->
+  <section class="grammar-section" id="g-adjectives">
+    <div class="grammar-section-title">Adjectives</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">The -e ending rule</div>
+        <span class="grammar-week-badge">Week 5</span>
+      </div>
+      <table class="grammar-table">
+        <thead><tr><th>Position</th><th>Form</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>After the noun (is/zijn)</td><td>no -e</td><td><em>De tuin is groot.</em></td></tr>
+          <tr><td>Before a de-word</td><td class="hi">-e</td><td><em>de grote tuin / een grote tuin</em></td></tr>
+          <tr><td>Before a definite het-word</td><td class="hi">-e</td><td><em>het grote huis</em></td></tr>
+          <tr><td>Before an indefinite het-word (singular)</td><td>NO -e</td><td><em>een groot huis</em></td></tr>
+          <tr><td>Before any plural</td><td class="hi">-e</td><td><em>grote tuinen / grote huizen</em></td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-note"><strong>Spelling:</strong> <em>lief → lieve</em> (f softens to v), <em>groot → grote</em> (drop one o), <em>mooi → mooie</em> (just add e).</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Comparative &amp; superlative</div>
+        <span class="grammar-week-badge">Week 5</span>
+      </div>
+      <p>Add <strong>-er</strong> for comparative and <strong>-st(e)</strong> for superlative.</p>
+      <table class="grammar-table">
+        <thead><tr><th>Adjective</th><th>Comparative</th><th>Superlative</th></tr></thead>
+        <tbody>
+          <tr><td>groot (big)</td><td>groter</td><td>grootst(e)</td></tr>
+          <tr><td>klein (small)</td><td>kleiner</td><td>kleinst(e)</td></tr>
+          <tr><td>leuk (nice)</td><td>leuker</td><td>leukst(e)</td></tr>
+          <tr><td>oud (old)</td><td>ouder</td><td>oudst(e)</td></tr>
+          <tr><td>jong (young)</td><td>jonger</td><td>jongst(e)</td></tr>
+          <tr><td>goed (good)</td><td class="hi">beter</td><td class="hi">best(e)</td></tr>
+          <tr><td>veel (a lot)</td><td class="hi">meer</td><td class="hi">meest(e)</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Structures:</strong> <em>groter dan Gent</em>, <em>even groot als zijn broer</em>, <em>het leukste van de buurt</em>.</p>
+    </div>
+  </section>
+
+  <!-- PRONOUNS -->
+  <section class="grammar-section" id="g-pronouns">
+    <div class="grammar-section-title">Pronouns</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Subject &amp; object forms</div>
+        <span class="grammar-week-badge">Week 5</span>
+      </div>
+      <table class="grammar-table">
+        <thead><tr><th>Person</th><th>Subject</th><th>Object</th></tr></thead>
+        <tbody>
+          <tr><td>1sg</td><td>ik</td><td>mij / me</td></tr>
+          <tr><td>2sg informal</td><td>jij / je</td><td>jou / je</td></tr>
+          <tr><td>2sg formal</td><td>u</td><td>u</td></tr>
+          <tr><td>3sg masc</td><td>hij</td><td>hem</td></tr>
+          <tr><td>3sg fem</td><td>zij / ze</td><td>haar</td></tr>
+          <tr><td>3sg neuter</td><td>het</td><td>het</td></tr>
+          <tr><td>1pl</td><td>wij / we</td><td>ons</td></tr>
+          <tr><td>2pl</td><td>jullie</td><td>jullie</td></tr>
+          <tr><td>3pl</td><td>zij / ze</td><td>hen (writing) / hun (speech)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Possessives (my, your, our…)</div>
+        <span class="grammar-week-badge">Week 5</span>
+      </div>
+      <table class="grammar-table">
+        <thead><tr><th>Person</th><th>Possessive</th></tr></thead>
+        <tbody>
+          <tr><td>ik</td><td>mijn</td></tr>
+          <tr><td>jij</td><td>jouw / je</td></tr>
+          <tr><td>u</td><td>uw</td></tr>
+          <tr><td>hij</td><td>zijn</td></tr>
+          <tr><td>zij</td><td>haar</td></tr>
+          <tr><td>wij</td><td class="hi">ons / onze</td></tr>
+          <tr><td>jullie</td><td>jullie</td></tr>
+          <tr><td>zij (pl)</td><td>hun</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-trap"><strong>ons vs onze:</strong> use <em>ons</em> before het-words (<em>ons huis</em>) and <em>onze</em> before de-words (<em>onze tuin</em>) and all plurals (<em>onze planten</em>).</div>
+    </div>
+  </section>
+
+  <!-- PREPOSITIONS -->
+  <section class="grammar-section" id="g-prepositions">
+    <div class="grammar-section-title">Prepositions</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Place (where you ARE)</div>
+        <span class="grammar-week-badge">Week 6</span>
+      </div>
+      <table class="grammar-table">
+        <tbody>
+          <tr><td>in</td><td>in</td></tr>
+          <tr><td>op</td><td>on / at (a place where things happen)</td></tr>
+          <tr><td>onder</td><td>under</td></tr>
+          <tr><td>naast</td><td>next to</td></tr>
+          <tr><td>voor</td><td>in front of / before</td></tr>
+          <tr><td>achter</td><td>behind</td></tr>
+          <tr><td>tussen</td><td>between</td></tr>
+          <tr><td>boven</td><td>above</td></tr>
+          <tr><td>bij</td><td>at someone's place</td></tr>
+          <tr><td>tegenover</td><td>opposite</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Movement (where you're GOING)</div>
+        <span class="grammar-week-badge">Week 6</span>
+      </div>
+      <table class="grammar-table">
+        <tbody>
+          <tr><td>naar</td><td>to (a destination)</td></tr>
+          <tr><td>van</td><td>from</td></tr>
+          <tr><td>door</td><td>through</td></tr>
+          <tr><td>over</td><td>over / across</td></tr>
+          <tr><td>langs</td><td>along / past</td></tr>
+          <tr><td>tot</td><td>until / up to</td></tr>
+          <tr><td>vanaf</td><td>starting from</td></tr>
+          <tr><td>uit</td><td>out of / from (a city you live in)</td></tr>
+        </tbody>
+      </table>
+      <div class="grammar-trap"><strong>The classic trap:</strong> "to a place" is <em>naar</em>, not <em>aan</em> or <em>tot</em>. <em>Ik ga naar het werk.</em> Never <em>ik ga aan het werk</em> (that sounds like "I'm starting work").</div>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Vehicle prepositions — in or op?</div>
+        <span class="grammar-week-badge">Week 6</span>
+      </div>
+      <ul>
+        <li><strong>op</strong> for vehicles you mount / board casually: <em>op de tram, op de bus, op de fiets</em></li>
+        <li><strong>in</strong> for enclosed vehicles: <em>in de auto, in de trein</em></li>
+        <li><strong>met</strong> + vehicle says <strong>how</strong> you're going, <strong>naar</strong> + place says <strong>where</strong></li>
+      </ul>
+      <p class="grammar-example">Morgen ga ik <strong>met de trein naar Brussel</strong>.</p>
+      <div class="grammar-note"><strong>Order:</strong> time / how / where. Front the time and the verb still jumps to seat 2 (V2 rule).</div>
+    </div>
+  </section>
+
+  <!-- NEGATION -->
+  <section class="grammar-section" id="g-negation">
+    <div class="grammar-section-title">Negation</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">niet or geen?</div>
+        <span class="grammar-week-badge">Week 4</span>
+      </div>
+      <ul>
+        <li><strong>niet</strong> — general "not" (before verbs, adjectives, or noun phrases with a definite article)</li>
+        <li><strong>geen</strong> — "no / not any" (before nouns without an article, or with <em>een</em>)</li>
+      </ul>
+      <p class="grammar-example">Ik heb dat <strong>niet</strong> gezien.</p>
+      <p class="grammar-example">Ik heb <strong>geen</strong> koffie gedronken.</p>
+      <p class="grammar-example">Hij heeft <strong>nooit</strong> gewerkt in België.</p>
+      <div class="grammar-note"><strong>In the perfect tense:</strong> place <em>niet</em> or <em>geen</em> near the end, before the past participle.</div>
+    </div>
+  </section>
+
+  <!-- ANTWERP TUSSENTAAL -->
+  <section class="grammar-section" id="g-antwerp">
+    <div class="grammar-section-title">Antwerp tussentaal</div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">ge / gij toolkit (recognition)</div>
+        <span class="grammar-week-badge">Weeks 1, 5, 7</span>
+      </div>
+      <p>In Antwerp, people say <em>ge</em> or <em>gij</em> for informal "you" instead of <em>je / jij</em>. Different verb endings. You don't have to produce it, but you should be able to parse it.</p>
+      <table class="grammar-table">
+        <thead><tr><th>Standard</th><th>Antwerp tussentaal</th></tr></thead>
+        <tbody>
+          <tr><td>Jij hebt</td><td>Gij hebt / hebde</td></tr>
+          <tr><td>Jij bent</td><td>Gij zijt <span style="opacity:0.6">(not "ge bent")</span></td></tr>
+          <tr><td>Jij gaat</td><td>Gij gaat</td></tr>
+          <tr><td>Heb je?</td><td>Hebde gij?</td></tr>
+          <tr><td>Ben je?</td><td>Zijde gij?</td></tr>
+          <tr><td>Ga je?</td><td>Gade gij?</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Filler words &amp; conversational glue</div>
+        <span class="grammar-week-badge">Week 7</span>
+      </div>
+      <p>The small words that hold sentences together. Deploy generously to sound less textbook.</p>
+      <ul>
+        <li><strong>allez</strong> — "alright then / come on / well…" (swiss-army filler)</li>
+        <li><strong>awel</strong> — "so… / well then" (Antwerp opener)</li>
+        <li><strong>amai</strong> — "wow / oof" (surprise)</li>
+        <li><strong>zeg</strong> — emphasises: <em>Tof, zeg!</em> = "Cool, eh!"</li>
+        <li><strong>hé</strong> — sentence-end tag, like Canadian "eh": <em>Het is koud, hé.</em></li>
+        <li><strong>ja maar</strong> — "yeah but…" (soft disagree, used more than English)</li>
+        <li><strong>toch</strong> — "right? / still / anyway" (chameleon)</li>
+        <li><strong>eigenlijk</strong> — "actually" (softens claims)</li>
+        <li><strong>gewoon</strong> — "just" (softens commands)</li>
+        <li><strong>dus</strong> — "so / therefore"</li>
+      </ul>
+    </div>
+
+    <div class="grammar-card">
+      <div class="grammar-card-head">
+        <div class="grammar-card-title">Antwerp regional expressions</div>
+        <span class="grammar-week-badge">Week 7</span>
+      </div>
+      <ul>
+        <li><strong>seffens</strong> — "in a moment, soon"</li>
+        <li><strong>direct</strong> — "right now / soon" (sometimes ambiguous)</li>
+        <li><strong>plezant</strong> — "fun" (standard Dutch: <em>leuk</em>)</li>
+        <li><strong>ne keer</strong> — "once / for a sec". <em>Wacht ne keer!</em></li>
+        <li><strong>just</strong> — "exactly, just". <em>Da's just!</em></li>
+        <li><strong>mottig</strong> — "rotten / nasty" (weather or mood)</li>
+        <li><strong>Het is hier zat</strong> — "it's packed in here"</li>
+        <li><strong>een zitje pakken</strong> — grab a seat</li>
+        <li><strong>fakkelmoe</strong> — knackered, beat</li>
+        <li><strong>manneke / vrouwke</strong> — little man / woman (tone matters)</li>
+        <li><strong>bompa / bomma / nonkel</strong> — grandpa / grandma / uncle</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<!-- AI COACH -->
+<style>
+  #page-chat { max-width: 760px; }
+  .ai-note {
+    font-size: 12px; color: var(--text-muted); margin-bottom: 14px;
+    padding: 10px 14px; background: var(--surface2);
+    border-left: 3px solid var(--orange); border-radius: 4px; line-height: 1.5;
+  }
+  .ai-settings {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+  }
+  .ai-settings summary {
+    cursor: pointer; font-family: var(--font-cond); font-weight: 700;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); list-style: none;
+  }
+  .ai-settings summary::-webkit-details-marker { display: none; }
+  .ai-settings summary::before { content: "⚙ "; }
+  .ai-settings[open] summary { margin-bottom: 14px; color: var(--orange); }
+  .ai-field { margin-bottom: 12px; }
+  .ai-field label {
+    display: block; font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; font-weight: 600; letter-spacing: 0.6px; margin-bottom: 5px;
+  }
+  .ai-field input, .ai-field select {
+    width: 100%; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 9px 12px; color: var(--text);
+    font-family: var(--font); font-size: 14px; outline: none;
+  }
+  .ai-field input:focus, .ai-field select:focus { border-color: var(--orange); }
+  .ai-save-note { font-size: 11px; color: var(--green); margin-top: 4px; height: 14px; }
+  .ai-scenario-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .ai-scenario-btn {
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--text-muted); font-family: var(--font); font-size: 12px;
+    font-weight: 600; padding: 6px 13px; border-radius: 20px; cursor: pointer; transition: all 0.15s;
+  }
+  .ai-scenario-btn.active { border-color: var(--orange); color: var(--orange); background: var(--orange-glow); }
+  .ai-scenario-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .ai-chat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; min-height: 300px;
+    max-height: 55vh; overflow-y: auto; margin-bottom: 12px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .ai-msg { display: flex; flex-direction: column; max-width: 88%; }
+  .ai-msg.user { align-self: flex-end; align-items: flex-end; }
+  .ai-msg.bot { align-self: flex-start; }
+  .ai-bubble {
+    border-radius: 12px; padding: 10px 14px; font-size: 15px; line-height: 1.5;
+  }
+  .ai-msg.user .ai-bubble { background: var(--orange); color: white; border-bottom-right-radius: 3px; }
+  .ai-msg.bot .ai-bubble { background: var(--surface2); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+  .ai-bubble .fl { font-weight: 600; }
+  .ai-trans { font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 6px; }
+  .ai-correction {
+    font-size: 12px; color: var(--yellow); margin-top: 8px;
+    border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.4;
+  }
+  .ai-correction strong { color: var(--yellow); }
+  .ai-tip { font-size: 12px; color: var(--blue); margin-top: 6px; line-height: 1.4; }
+  .ai-msg-actions { margin-top: 6px; }
+  .ai-play-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface3); border: 1px solid var(--border);
+    color: var(--orange); font-size: 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .ai-play-btn:hover { background: var(--orange); color: white; border-color: var(--orange); }
+  .ai-play-btn.playing { background: var(--orange); color: white; animation: pulse 1s ease-in-out infinite; }
+  .ai-typing { font-size: 13px; color: var(--text-muted); font-style: italic; align-self: flex-start; }
+  .ai-input-row { display: flex; gap: 8px; align-items: stretch; }
+  .ai-input {
+    flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 11px 14px; color: var(--text);
+    font-family: var(--font); font-size: 15px; outline: none; resize: none; min-height: 46px; max-height: 120px;
+  }
+  .ai-input:focus { border-color: var(--orange); }
+  .ai-send {
+    background: var(--orange); border: none; border-radius: 10px;
+    padding: 0 20px; color: white; font-family: var(--font); font-size: 14px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .ai-send:hover:not(:disabled) { background: var(--orange-dark); }
+  .ai-send:disabled { opacity: 0.5; cursor: default; }
+  .ai-chat-actions { display: flex; justify-content: space-between; margin-top: 10px; align-items: center; }
+  .ai-reset {
+    background: none; border: none; color: var(--text-dim); font-size: 12px;
+    cursor: pointer; text-decoration: underline;
+  }
+  .ai-reset:hover { color: var(--red); }
+  .ai-hint { font-size: 11px; color: var(--text-dim); }
+  .ai-error {
+    background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3);
+    color: var(--red); border-radius: 8px; padding: 10px 14px; font-size: 13px;
+    margin-bottom: 12px; line-height: 1.4;
+  }
+</style>
+<div class="page" id="page-chat">
+  <div class="section-header" style="margin-top:0">
+    <div class="section-title">AI Coach — Flemish conversation partner</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="ai-note">
+    Practice real Flemish conversations. The coach stays in character, replies in
+    Belgian Dutch at your level, and gently corrects your mistakes. Your API key is
+    stored only in this browser and calls your provider directly — nothing goes to
+    any Vlaams Sprint server.
+  </div>
+
+  <details class="ai-settings" id="ai-settings">
+    <summary>API settings</summary>
+    <div class="ai-field">
+      <label for="ai-provider">Provider</label>
+      <select id="ai-provider">
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+    </div>
+    <div class="ai-field">
+      <label for="ai-key">API key</label>
+      <input type="password" id="ai-key" placeholder="sk-... (stored in this browser only)" autocomplete="off" />
+    </div>
+    <div class="ai-field">
+      <label for="ai-model">Model</label>
+      <input type="text" id="ai-model" placeholder="e.g. gpt-4o-mini" />
+    </div>
+    <div class="ai-save-note" id="ai-save-note"></div>
+  </details>
+
+  <div class="ai-scenario-row" id="ai-scenarios"></div>
+
+  <div class="ai-error" id="ai-error" style="display:none"></div>
+
+  <div class="ai-chat" id="ai-chat"></div>
+
+  <div class="ai-input-row">
+    <textarea class="ai-input" id="ai-input" placeholder="Type in Flemish (or English if you're stuck)…" rows="1"></textarea>
+    <button class="ai-send" id="ai-send">Send</button>
+  </div>
+  <div class="ai-chat-actions">
+    <span class="ai-hint">Enter to send · Shift+Enter for a new line</span>
+    <button class="ai-reset" id="ai-reset">Reset conversation</button>
+  </div>
 </div>
 
 <div class="share-toast" id="share-toast"></div>
@@ -1620,12 +2376,30 @@ const VOCAB_DATA = {
 // STATE
 // ============================================================
 const STATE_KEY = "vlaams_sprint_v4";
-const COURSE_START = new Date("2026-05-09");
-const TODAY = new Date("2026-05-16"); // pinned per existing app convention
 
+// TODAY and COURSE_START are computed at bootstrap from the real clock.
+// Both are Date objects at UTC midnight of the represented day so that
+// dateKey() (which uses toISOString) always returns the local calendar date.
+// A ?today=YYYY-MM-DD URL parameter overrides TODAY for QA / screenshots.
+let TODAY = todayStartUTC();
+let COURSE_START = TODAY;
+
+function todayStartUTC() {
+  const n = new Date();
+  return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()));
+}
+function parseDateKey(s) {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
 function todayKey() { return TODAY.toISOString().slice(0,10); }
 function dateKey(d) { return d.toISOString().slice(0,10); }
-function addDays(base, n) { const d = new Date(base); d.setDate(d.getDate()+n); return d; }
+function addDays(base, n) {
+  // UTC arithmetic so a DST boundary doesn't shift the calendar day.
+  const d = new Date(base);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d;
+}
 
 function defaultState() {
   // SRS: { [id]: { box, due, lastSeen, correctCount, wrongCount } }
@@ -1637,7 +2411,8 @@ function defaultState() {
     preferredVoiceURI: null,
     recentLookups: [], // [{srcLang, dstLang, srcText, dstText, t}], newest first, max 10
     savedVocab: [],    // [{fl, en, t}] — user-curated learning list, newest first
-    txDirection: "auto" // "auto" | "nl-en" | "en-nl"
+    txDirection: "auto", // "auto" | "nl-en" | "en-nl"
+    courseStart: null    // "YYYY-MM-DD"; seeded at bootstrap
   };
 }
 function loadState() {
@@ -3444,6 +4219,336 @@ function showPage(id) {
   if (id === "quiz") renderQuiz();
   if (id === "weekly") renderWeeklyTests();
   if (id === "lexicon") renderLexicon();
+  if (id === "grammar") renderGrammar();
+  if (id === "chat") renderChat();
+}
+
+// ============================================================
+// GRAMMAR REFERENCE — pulled from every week's Quick Reference sections.
+// Search filters cards by their text content; topic chips scroll to sections.
+// ============================================================
+const grammarUi = { initialized: false, search: "" };
+
+function renderGrammar() {
+  initGrammarOnce();
+  applyGrammarFilter();
+}
+
+function initGrammarOnce() {
+  if (grammarUi.initialized) return;
+  grammarUi.initialized = true;
+
+  const search = document.getElementById("grammar-search");
+  if (search) {
+    search.value = grammarUi.search;
+    search.addEventListener("input", e => {
+      grammarUi.search = e.target.value.toLowerCase().trim();
+      applyGrammarFilter();
+    });
+  }
+
+  document.querySelectorAll(".grammar-topic-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const el = document.getElementById("g-" + btn.dataset.topic);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+function applyGrammarFilter() {
+  const q = grammarUi.search;
+  let anyVisible = false;
+
+  document.querySelectorAll(".grammar-card").forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const match = !q || text.includes(q);
+    card.style.display = match ? "" : "none";
+    if (match) anyVisible = true;
+  });
+
+  // Hide entire sections whose cards are all filtered out
+  document.querySelectorAll(".grammar-section").forEach(section => {
+    const anyCard = Array.from(section.querySelectorAll(".grammar-card"))
+      .some(c => c.style.display !== "none");
+    section.style.display = anyCard ? "" : "none";
+  });
+
+  // Empty state
+  const empty = document.getElementById("grammar-empty");
+  if (empty) empty.style.display = (q && !anyVisible) ? "" : "none";
+
+  // Also hide the topic chips when there's a search that filtered everything
+  // (they'd scroll to sections that are hidden)
+  const topics = document.getElementById("grammar-topics");
+  if (topics) topics.style.display = (q && !anyVisible) ? "none" : "";
+}
+
+// ============================================================
+// AI COACH — Flemish conversation partner (bring-your-own-key)
+// Calls OpenAI or Anthropic directly from the browser. The key lives
+// only in localStorage under a separate key so it never touches the
+// main progress state and is never sent to a Vlaams Sprint server.
+// ============================================================
+const AI_SETTINGS_KEY = "vlaams_ai_settings_v1";
+const AI_MODEL_DEFAULTS = { openai: "gpt-4o-mini", anthropic: "claude-3-5-haiku-latest" };
+
+const AI_SCENARIOS = [
+  { id: "free",    label: "Free chat",     ctx: "an open, everyday conversation" },
+  { id: "intro",   label: "Introductions", ctx: "meeting for the first time — greetings, names, where you're from, small talk" },
+  { id: "cafe",    label: "Café / bar",    ctx: "a café or bar terrace — you are the server, help the learner order drinks and pay" },
+  { id: "frituur", label: "Frituur",       ctx: "a frituur or restaurant — you take the order for fries, snacks, and sauce" },
+  { id: "transport", label: "Getting around", ctx: "public transport and directions — the learner asks the way, buys a ticket, takes a tram" },
+];
+
+const aiUi = {
+  initialized: false,
+  scenario: "free",
+  messages: [],      // { role: "user"|"assistant", content, data? }
+  busy: false,
+};
+
+function loadAiSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || "{}");
+    return {
+      provider: s.provider || "openai",
+      apiKey: s.apiKey || "",
+      model: s.model || "",
+    };
+  } catch { return { provider: "openai", apiKey: "", model: "" }; }
+}
+function saveAiSettings(s) {
+  try { localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(s)); } catch {}
+}
+
+function currentWeekGuess() {
+  const done = (typeof getDoneCount === "function") ? getDoneCount() : 0;
+  return Math.min(WEEKS.length, Math.floor(done / 7) + 1);
+}
+
+function buildAiSystemPrompt() {
+  const week = currentWeekGuess();
+  const wk = WEEKS[week - 1];
+  const scenario = AI_SCENARIOS.find(s => s.id === aiUi.scenario) || AI_SCENARIOS[0];
+  return [
+    "You are a warm, patient Belgian Dutch (Flemish / Vlaams) conversation partner and coach for an English-speaking learner.",
+    `The learner is around week ${week} of a 7-week course ("${wk.name}", grammar focus: ${wk.grammar}). Keep your Flemish at roughly that level — simple and clear, not advanced.`,
+    `Current scenario: ${scenario.ctx}. Stay in character for this scenario.`,
+    "Use natural Belgian Dutch (Flemish), including common tussentaal where it fits (e.g. 'ge/gij', 'allez', 'pintje', 'frietjes', 'goesting'). Avoid formal Netherlands-Dutch phrasing.",
+    "Keep each reply short: 1-2 sentences. Ask a follow-up question to keep the conversation going.",
+    "If the learner writes in English or gets stuck, reply in easy Flemish anyway but make your English translation extra clear.",
+    "You MUST respond with ONLY a JSON object, no markdown, no code fences, with these fields:",
+    '{ "reply": "<your in-character Flemish reply>", "translation": "<English translation of your reply>", "correction": "<short, friendly note in English about any mistakes in the learner\'s last message; empty string if it was fine>", "tip": "<optional one-line learning tip in English; empty string if none>" }',
+  ].join("\n");
+}
+
+async function callAiProvider(settings, systemPrompt, messages) {
+  if (settings.provider === "anthropic") {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": settings.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: settings.model || AI_MODEL_DEFAULTS.anthropic,
+        max_tokens: 500,
+        system: systemPrompt,
+        messages: messages.map(m => ({ role: m.role, content: m.content })),
+      }),
+    });
+    if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    const data = await res.json();
+    return (data.content && data.content[0] && data.content[0].text) || "";
+  }
+  // default: OpenAI-compatible chat completions
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "authorization": `Bearer ${settings.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: settings.model || AI_MODEL_DEFAULTS.openai,
+      temperature: 0.7,
+      response_format: { type: "json_object" },
+      messages: [{ role: "system", content: systemPrompt }, ...messages.map(m => ({ role: m.role, content: m.content }))],
+    }),
+  });
+  if (!res.ok) throw new Error(`OpenAI ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const data = await res.json();
+  return (data.choices && data.choices[0] && data.choices[0].message.content) || "";
+}
+
+function parseAiReply(raw) {
+  let txt = (raw || "").trim();
+  // strip code fences if the model added them
+  txt = txt.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+  try {
+    const obj = JSON.parse(txt);
+    return {
+      reply: obj.reply || "",
+      translation: obj.translation || "",
+      correction: obj.correction || "",
+      tip: obj.tip || "",
+    };
+  } catch {
+    // fall back to raw text as the reply
+    return { reply: txt, translation: "", correction: "", tip: "" };
+  }
+}
+
+function showAiError(msg) {
+  const el = document.getElementById("ai-error");
+  if (!el) return;
+  if (!msg) { el.style.display = "none"; el.textContent = ""; return; }
+  el.style.display = "";
+  el.textContent = msg;
+}
+
+function renderChat() {
+  initChatOnce();
+  renderScenarioButtons();
+  renderChatMessages();
+}
+
+function initChatOnce() {
+  if (aiUi.initialized) return;
+  aiUi.initialized = true;
+
+  const s = loadAiSettings();
+  const providerEl = document.getElementById("ai-provider");
+  const keyEl = document.getElementById("ai-key");
+  const modelEl = document.getElementById("ai-model");
+  const noteEl = document.getElementById("ai-save-note");
+
+  providerEl.value = s.provider;
+  keyEl.value = s.apiKey;
+  modelEl.value = s.model;
+  modelEl.placeholder = `e.g. ${AI_MODEL_DEFAULTS[s.provider]}`;
+
+  function persist() {
+    saveAiSettings({ provider: providerEl.value, apiKey: keyEl.value.trim(), model: modelEl.value.trim() });
+    noteEl.textContent = "Saved ✓";
+    setTimeout(() => { noteEl.textContent = ""; }, 1500);
+  }
+  providerEl.addEventListener("change", () => {
+    modelEl.placeholder = `e.g. ${AI_MODEL_DEFAULTS[providerEl.value]}`;
+    persist();
+  });
+  keyEl.addEventListener("change", persist);
+  modelEl.addEventListener("change", persist);
+
+  // If no key yet, open settings so it's obvious what to do
+  if (!s.apiKey) document.getElementById("ai-settings").open = true;
+
+  const input = document.getElementById("ai-input");
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 120) + "px";
+  });
+  document.getElementById("ai-send").addEventListener("click", sendChat);
+  document.getElementById("ai-reset").addEventListener("click", () => {
+    aiUi.messages = [];
+    showAiError("");
+    renderChatMessages();
+  });
+}
+
+function renderScenarioButtons() {
+  const host = document.getElementById("ai-scenarios");
+  if (host.childElementCount) {
+    host.querySelectorAll(".ai-scenario-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.scen === aiUi.scenario);
+    });
+    return;
+  }
+  host.innerHTML = AI_SCENARIOS.map(s =>
+    `<button class="ai-scenario-btn ${s.id === aiUi.scenario ? "active" : ""}" data-scen="${s.id}">${escapeHTML(s.label)}</button>`
+  ).join("");
+  host.querySelectorAll(".ai-scenario-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (aiUi.scenario === btn.dataset.scen) return;
+      aiUi.scenario = btn.dataset.scen;
+      aiUi.messages = [];   // fresh conversation per scenario
+      showAiError("");
+      renderScenarioButtons();
+      renderChatMessages();
+    });
+  });
+}
+
+function renderChatMessages() {
+  const chat = document.getElementById("ai-chat");
+  if (!aiUi.messages.length) {
+    const scen = AI_SCENARIOS.find(s => s.id === aiUi.scenario);
+    chat.innerHTML = `<div class="ai-typing">Start the conversation — you're in "${escapeHTML(scen.label)}" mode. Say something in Flemish, or type in English if you're stuck.</div>`;
+    return;
+  }
+  chat.innerHTML = aiUi.messages.map((m, i) => {
+    if (m.role === "user") {
+      return `<div class="ai-msg user"><div class="ai-bubble">${escapeHTML(m.content)}</div></div>`;
+    }
+    const d = m.data || parseAiReply(m.content);
+    let html = `<div class="ai-msg bot"><div class="ai-bubble"><span class="fl">${escapeHTML(d.reply)}</span>`;
+    if (d.translation) html += `<div class="ai-trans">${escapeHTML(d.translation)}</div>`;
+    if (d.correction)  html += `<div class="ai-correction"><strong>✎ </strong>${escapeHTML(d.correction)}</div>`;
+    if (d.tip)         html += `<div class="ai-tip">💡 ${escapeHTML(d.tip)}</div>`;
+    html += `</div><div class="ai-msg-actions"><button class="ai-play-btn" data-idx="${i}" title="Hear it in Flemish">▶</button></div></div>`;
+    return html;
+  }).join("");
+
+  if (aiUi.busy) chat.innerHTML += `<div class="ai-typing">Coach is typing…</div>`;
+
+  chat.querySelectorAll(".ai-play-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const m = aiUi.messages[parseInt(btn.dataset.idx, 10)];
+      const d = m.data || parseAiReply(m.content);
+      if (d.reply) { btn.classList.add("playing"); speak(d.reply, btn); }
+    });
+  });
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function sendChat() {
+  if (aiUi.busy) return;
+  const input = document.getElementById("ai-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  const settings = loadAiSettings();
+  if (!settings.apiKey) {
+    showAiError("Add your API key in settings first (the ⚙ panel above).");
+    document.getElementById("ai-settings").open = true;
+    return;
+  }
+  showAiError("");
+
+  aiUi.messages.push({ role: "user", content: text });
+  input.value = "";
+  input.style.height = "auto";
+  aiUi.busy = true;
+  document.getElementById("ai-send").disabled = true;
+  renderChatMessages();
+
+  try {
+    const systemPrompt = buildAiSystemPrompt();
+    const raw = await callAiProvider(settings, systemPrompt, aiUi.messages);
+    const data = parseAiReply(raw);
+    aiUi.messages.push({ role: "assistant", content: raw, data });
+  } catch (err) {
+    // remove the user message we optimistically added? keep it, just show error
+    showAiError(`${err.message || "Request failed"}. Check your key, model name, and network. Note: browser CORS must allow your provider.`);
+  } finally {
+    aiUi.busy = false;
+    document.getElementById("ai-send").disabled = false;
+    renderChatMessages();
+  }
 }
 
 function setupNav() {
@@ -3459,11 +4564,20 @@ function setupNav() {
   const shareData = parseShareParam();
   if (shareData) activateVisitorMode(shareData);
 
-  // First-run seed: pre-fill week 1 as complete (Val finished day 7 on 16 May 2026)
-  if (!VISITOR_MODE && Object.keys(state.days).length === 0) {
-    for (let d = 0; d < 7; d++) state.days[`w0_d${d}`] = true;
+  // 1. Apply optional ?today=YYYY-MM-DD URL override for QA / demos.
+  applyDateOverride();
+
+  // 2. Resolve course start.
+  //   - Existing users who already have completed days keep the legacy
+  //     2026-05-09 anchor so their heatmap and history don't shift.
+  //   - Truly-fresh users start the calendar today.
+  if (!VISITOR_MODE && !state.courseStart) {
+    state.courseStart = Object.keys(state.days).length > 0
+      ? "2026-05-09"
+      : todayKey();
     saveState();
   }
+  if (state.courseStart) COURSE_START = parseDateKey(state.courseStart);
 
   recalcStreak();
   setupNav();
@@ -3476,6 +4590,12 @@ function setupNav() {
     refreshDutchVoice();
   }
 })();
+
+function applyDateOverride() {
+  const params = new URLSearchParams(window.location.search);
+  const t = params.get("today");
+  if (t && /^\d{4}-\d{2}-\d{2}$/.test(t)) TODAY = parseDateKey(t);
+}
 </script>
 </body>
 </html>
