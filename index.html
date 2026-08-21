@@ -1408,9 +1408,9 @@
 
   <div class="ai-note">
     Practice real Flemish conversations. The coach stays in character, replies in
-    Belgian Dutch at your level, and gently corrects your mistakes. Your API key is
-    stored only in this browser and calls your provider directly; nothing goes to
-    any Vlaams Sprint server.
+    Belgian Dutch at your level, and gently corrects your mistakes. When you're
+    signed in, your API key and model sync privately to your own account (only you
+    can read it) so you don't have to re-enter them on other devices.
     <br><br>
     <strong>Free option:</strong> get a Google Gemini key at
     <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--orange)">aistudio.google.com/apikey</a>
@@ -2432,7 +2432,8 @@ function defaultState() {
     recentLookups: [], // [{srcLang, dstLang, srcText, dstText, t}], newest first, max 10
     savedVocab: [],    // [{fl, en, t}] — user-curated learning list, newest first
     txDirection: "auto", // "auto" | "nl-en" | "en-nl"
-    courseStart: null    // "YYYY-MM-DD"; seeded at bootstrap
+    courseStart: null,   // "YYYY-MM-DD"; seeded at bootstrap
+    aiSettings: { provider: "gemini", apiKey: "", model: "" } // synced AI Coach config
   };
 }
 function loadState() {
@@ -2534,6 +2535,7 @@ function postCloudApply() {
   const active = document.querySelector(".page.active");
   const id = active ? active.id.replace("page-", "") : "dashboard";
   showPage(id);
+  refreshAiSettingsUI();   // pull in a key/model synced from another device
 }
 
 function cloudSaveState() {
@@ -4461,17 +4463,35 @@ const aiUi = {
 };
 
 function loadAiSettings() {
+  // Prefer the synced settings on the account; fall back to the legacy
+  // browser-only copy (for anyone upgrading from before sync existed).
+  const a = state && state.aiSettings;
+  if (a && (a.apiKey || a.model || a.provider)) {
+    return { provider: a.provider || "gemini", apiKey: a.apiKey || "", model: a.model || "" };
+  }
   try {
     const s = JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || "{}");
-    return {
-      provider: s.provider || "gemini",
-      apiKey: s.apiKey || "",
-      model: s.model || "",
-    };
+    return { provider: s.provider || "gemini", apiKey: s.apiKey || "", model: s.model || "" };
   } catch { return { provider: "gemini", apiKey: "", model: "" }; }
 }
 function saveAiSettings(s) {
+  // Store in synced state so the key/model follow the account across devices.
+  state.aiSettings = { provider: s.provider, apiKey: s.apiKey, model: s.model };
+  saveState();  // writes localStorage + (when signed in) Firebase
+  // Keep a browser-only copy too, as an offline fallback before sign-in.
   try { localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(s)); } catch {}
+}
+
+// Refresh the settings inputs when a remote sync brings new values in.
+function refreshAiSettingsUI() {
+  if (!aiUi.initialized) return;
+  const s = loadAiSettings();
+  const p = document.getElementById("ai-provider");
+  const k = document.getElementById("ai-key");
+  const m = document.getElementById("ai-model");
+  if (p) p.value = s.provider;
+  if (k) k.value = s.apiKey;
+  if (m) { m.value = s.model; m.placeholder = `e.g. ${AI_MODEL_DEFAULTS[s.provider]}`; }
 }
 
 function currentWeekGuess() {
