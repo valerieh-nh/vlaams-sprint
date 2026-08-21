@@ -4444,7 +4444,9 @@ const AI_MODEL_DEFAULTS = { gemini: "gemini-3.6-flash", openai: "gpt-4o-mini", a
 // Gemini 3.x uses thinkingLevel (minimal/low/medium/high); 2.5 uses thinkingBudget.
 // Both default to heavy "thinking" that adds latency, so we constrain it for chat.
 function geminiThinkingConfig(model) {
-  return /gemini-3/i.test(model) ? { thinkingLevel: "low" } : { thinkingBudget: 0 };
+  // "minimal" keeps thinking tokens tiny; important because thinking tokens
+  // count against maxOutputTokens and can otherwise truncate the reply.
+  return /gemini-3/i.test(model) ? { thinkingLevel: "minimal" } : { thinkingBudget: 0 };
 }
 
 const AI_SCENARIOS = [
@@ -4535,7 +4537,7 @@ async function callAiProvider(settings, systemPrompt, messages) {
           })),
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 400,
+            maxOutputTokens: 1200,
             thinkingConfig: geminiThinkingConfig(model),
           },
         }),
@@ -4624,7 +4626,7 @@ async function callAiProviderStream(settings, systemPrompt, messages, onDelta) {
           })),
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 400,
+            maxOutputTokens: 1200,
             thinkingConfig: geminiThinkingConfig(model),
           },
         }),
