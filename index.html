@@ -1400,8 +1400,12 @@
   <div class="ai-note">
     Practice real Flemish conversations. The coach stays in character, replies in
     Belgian Dutch at your level, and gently corrects your mistakes. Your API key is
-    stored only in this browser and calls your provider directly — nothing goes to
+    stored only in this browser and calls your provider directly; nothing goes to
     any Vlaams Sprint server.
+    <br><br>
+    <strong>Free option:</strong> get a Google Gemini key at
+    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--orange)">aistudio.google.com/apikey</a>
+    (free tier, no card required), then paste it in the settings below.
   </div>
 
   <details class="ai-settings" id="ai-settings">
@@ -1409,6 +1413,7 @@
     <div class="ai-field">
       <label for="ai-provider">Provider</label>
       <select id="ai-provider">
+        <option value="gemini">Google Gemini (free tier)</option>
         <option value="openai">OpenAI</option>
         <option value="anthropic">Anthropic (Claude)</option>
       </select>
@@ -4290,7 +4295,7 @@ function applyGrammarFilter() {
 // main progress state and is never sent to a Vlaams Sprint server.
 // ============================================================
 const AI_SETTINGS_KEY = "vlaams_ai_settings_v1";
-const AI_MODEL_DEFAULTS = { openai: "gpt-4o-mini", anthropic: "claude-3-5-haiku-latest" };
+const AI_MODEL_DEFAULTS = { gemini: "gemini-2.5-flash", openai: "gpt-4o-mini", anthropic: "claude-3-5-haiku-latest" };
 
 const AI_SCENARIOS = [
   { id: "free",    label: "Free chat",     ctx: "an open, everyday conversation" },
@@ -4311,11 +4316,11 @@ function loadAiSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(AI_SETTINGS_KEY) || "{}");
     return {
-      provider: s.provider || "openai",
+      provider: s.provider || "gemini",
       apiKey: s.apiKey || "",
       model: s.model || "",
     };
-  } catch { return { provider: "openai", apiKey: "", model: "" }; }
+  } catch { return { provider: "gemini", apiKey: "", model: "" }; }
 }
 function saveAiSettings(s) {
   try { localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(s)); } catch {}
@@ -4343,6 +4348,28 @@ function buildAiSystemPrompt() {
 }
 
 async function callAiProvider(settings, systemPrompt, messages) {
+  if (settings.provider === "gemini") {
+    const model = settings.model || AI_MODEL_DEFAULTS.gemini;
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-goog-api-key": settings.apiKey },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: messages.map(m => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }],
+          })),
+          generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
+        }),
+      }
+    );
+    if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    const data = await res.json();
+    const cand = data.candidates && data.candidates[0];
+    return (cand && cand.content && cand.content.parts && cand.content.parts[0] && cand.content.parts[0].text) || "";
+  }
   if (settings.provider === "anthropic") {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
